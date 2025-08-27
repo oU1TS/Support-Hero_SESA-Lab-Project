@@ -10,3 +10,6 @@ tomra jei email provide korso sheta diye dhukba
 
 # Database tutorial
 - get from or copy the database files to the path: `C:\xampp\mysql\data\*`
+
+
+# shunlam Ornob ki jeno dekhte chae
