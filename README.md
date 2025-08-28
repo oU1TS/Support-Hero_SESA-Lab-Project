@@ -1,11 +1,9 @@
 # SESA-Lab-Project
 22.07.25
 
-# Group 7 files for SESA lab project
-
-https://drive.google.com/drive/folders/1gfwjpIN_dtEVqUR53xT3sedpZTfHo_LD
-
-tomra jei email provide korso sheta diye dhukba
+# Group 7 files (tomra jei email provide korso sheta diye dhukba) 
+- SESA lab project [Link](https://drive.google.com/drive/folders/1gfwjpIN_dtEVqUR53xT3sedpZTfHo_LD)
+- SESA Theory [Link](https://drive.google.com/drive/folders/1IC2HFmXTUHg3zsaY2Ss52Hcr9ID8tBFu?usp=drive_link) 
 
 
 # Database tutorial
