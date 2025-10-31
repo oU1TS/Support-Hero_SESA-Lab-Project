@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 31, 2025 at 08:17 AM
+-- Generation Time: Oct 31, 2025 at 02:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,8 +41,12 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`email`, `password`, `username`, `user_id`, `type`, `balance`) VALUES
-('gsmurady123@gmail.com', '1234', 'Gaus', 6, 'provider', 1000.00),
-('masud@gmail.com', '12345', 'Masud', 9, 'consumer', 0.00);
+('gsmurady123@gmail.com', '1234', 'Gaus', 6, 'provider', 800.00),
+('masud@gmail.com', '12345', 'Masud', 9, 'consumer', 0.00),
+('gaus.admin@gmail.com', 'admin1234', 'Gaus', 10, 'admin', 0.00),
+('jubair.admin@gmail.com', 'admin1234', 'Jubair', 11, 'admin', 0.00),
+('amit.admin@gmail.com', 'admin1234', 'Amit', 12, 'admin', 0.00),
+('zani.admin@gmail.com', 'admin1234', 'Zani', 13, 'admin', 0.00);
 
 -- --------------------------------------------------------
 
@@ -67,7 +71,8 @@ CREATE TABLE `service` (
 
 INSERT INTO `service` (`service_id`, `service_name`, `service_type`, `username`, `email`, `deadline`, `details`, `compensation`) VALUES
 (4, 'Service 1', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfdsfdsfdsfdsds', 100),
-(5, 'Service 2', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfsdf', 100);
+(5, 'Service 2', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfsdf', 100),
+(6, 'Service 3', 'request', 'Gaus', 'gsmurady123@gmail.com', '2025-11-01', 'temp', 200);
 
 --
 -- Indexes for dumped tables
@@ -93,13 +98,13 @@ ALTER TABLE `service`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `user_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `user_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

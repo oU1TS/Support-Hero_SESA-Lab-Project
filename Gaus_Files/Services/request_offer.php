@@ -36,6 +36,8 @@ if (isset($_POST['submit'])) {
         $result = mysqli_query($conn, $sql);
         if ($result) {
             $flag = 2; // Success
+            $sqlUpdateBalance = "UPDATE account SET balance = balance - $compensation WHERE username = '$username' AND type = '$user_type'";
+            $UpdateBalance = mysqli_query($conn, $sqlUpdateBalance);
         } else {
             $flag = 1; // Error
         }

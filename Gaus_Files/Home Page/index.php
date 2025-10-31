@@ -73,7 +73,11 @@ if ($is_logged_in) {
         <div class="container">
             <?php if ($is_logged_in): ?>
                 <!-- MODIFIED: Show this if user is logged in -->
+                <?php if ($user_type == 'admin') {
+                    echo '<a href="admin.php" class="btn btn-blue" style="margin-right:auto;">Go to Dashboard</a>';
+                } ?>
                 <span class="welcome-text">Welcome <?php echo $user_type; ?>, <?php echo $username; ?>!</span>
+
                 <a href="../Registration_Login/logout.php" class="btn btn-red">Logout</a>
             <?php else: ?>
                 <!-- ORIGINAL: Show this if user is not logged in -->

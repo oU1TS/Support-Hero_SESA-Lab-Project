@@ -212,7 +212,7 @@ if (isset($_POST['submit'])) {
                         <option value="">-- Select your role --</option>
                         <option value="provider">Provider</option>
                         <option value="consumer">Consumer</option>
-                        <option value="donor">Donor</option>
+                        <!-- <option value="donor">Donor</option> -->
                     </select>
                 </div>
                 <div class="form-group">

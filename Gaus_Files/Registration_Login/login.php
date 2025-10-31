@@ -8,6 +8,9 @@ if (isset($_POST['submit'])) {
     $email = trim($_POST['input_email']);
     $password = trim($_POST['input_password']);
     $type = $_POST['input_type'];
+    if ($type == ""){
+        $type = "admin";
+    }
     $sql = "select * from account where email='$email' and password = '$password' and type='$type' ";
     $result = mysqli_query($conn, $sql);
     $count = mysqli_num_rows($result);
@@ -18,7 +21,11 @@ if (isset($_POST['submit'])) {
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $row['username'];
         $_SESSION['email'] = $row['email'];
-        $_SESSION['user_type'] = $row['type'];
+        if ($type == "") {
+            $_SESSION['user_type'] = 'admin';
+        } else {
+            $_SESSION['user_type'] = $row['type'];
+        }
     }
 }
 ?>
@@ -189,11 +196,11 @@ if (isset($_POST['submit'])) {
 
                 <div class="form-group">
                     <label for="input_type">User Type:</label>
-                    <select id="input_type" name="input_type" required>
+                    <select id="input_type" name="input_type">
                         <option value="">-- Select your role --</option>
                         <option value="provider">Provider</option>
                         <option value="consumer">Consumer</option>
-                        <option value="donor">Donor</option>
+                        <!-- <option value="donor">Donor</option> -->
                     </select>
                 </div>
                 <div class="form-group">
