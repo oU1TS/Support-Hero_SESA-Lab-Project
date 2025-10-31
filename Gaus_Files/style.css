@@ -176,6 +176,13 @@ body {
     transform: scale(1.05);
 }
 
+/* ADDED: Small button variant */
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
 .btn-blue {
     background-color: #2563eb;
     color: white;
@@ -251,6 +258,9 @@ body {
 .section-content {
     max-width: 56rem;
     text-align: center;
+    /* This will be overridden for list items */
+    width: 100%;
+    /* Ensure section-content takes full width */
 }
 
 .section-content h2 {
@@ -287,6 +297,90 @@ body {
 #backend h2 {
     margin-bottom: 2.5rem;
 }
+
+/* ================================== */
+/* MODIFIED: New Service List Styles  */
+/* ================================== */
+.service-list-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* Make it fill the .section-content */
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    /* Use a light border */
+    border-radius: 0.75rem;
+    /* Rounded corners for the container */
+    overflow: hidden;
+    /* To clip the children's corners */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.service-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    /* Override center align from parent */
+    padding: 1rem 1.5rem;
+    /* Reduced padding for compactness */
+    border-bottom: 1px solid #e5e7eb;
+    /* Separator line */
+}
+
+.service-list-item:last-child {
+    border-bottom: none;
+    /* Remove border from last item */
+}
+
+.service-info {
+    flex-grow: 1;
+    /* Take up available space */
+    margin-right: 1rem;
+    /* Space before the button */
+    min-width: 0;
+    /* Allows text-overflow to work */
+}
+
+.service-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.125rem;
+    /* 18px */
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.service-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    /* 14px */
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.service-info p strong {
+    color: #374151;
+}
+
+.service-info .service-desc-snippet {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #1f2937;
+    /* Truncate text if it's too long */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.service-action {
+    flex-shrink: 0;
+    /* Prevent this column from shrinking */
+}
+
+/* ================================== */
+/* END: New Service List Styles       */
+/* ================================== */
+
 
 .grid-3 {
     display: grid;
@@ -352,7 +446,8 @@ body {
 .go-to-top-button {
     /* Positioning */
     position: fixed;
-    bottom: 4.5rem; /* Positioned above mobile nav */
+    bottom: 4.5rem;
+    /* Positioned above mobile nav */
     right: 20px;
     z-index: 1000;
 
@@ -373,7 +468,8 @@ body {
 
     /* Visibility & Transitions */
     opacity: 0;
-    visibility: hidden; /* Start hidden */
+    visibility: hidden;
+    /* Start hidden */
     transform: translateY(20px);
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
@@ -387,6 +483,124 @@ body {
 
 .go-to-top-button:hover {
     background-color: #1d4ed8;
+}
+
+/* ================================== */
+/* ===== FOOTER STYLES ===== */
+/* ================================== */
+
+.site-footer {
+    width: 100%;
+    /* Stretches to fill the .section-content */
+    padding: 2rem 1rem;
+    /* Spacing inside the footer */
+    border-top: 1px solid #e5e7eb;
+    /* Light dividing line */
+    margin-top: 2rem;
+    /* Space from the "Contact Us" h2 title */
+    text-align: center;
+    /* Center-aligns the motto */
+}
+
+.footer-nav {
+    display: flex;
+    flex-direction: column;
+    /* Stacks links on top of social icons on mobile */
+    justify-content:center;
+    align-items: center;
+    gap: 2rem;
+    /* Space between the links and social icons */
+    margin-bottom: 1.5rem;
+    /* Space before the motto */
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    /* Space between "Email" and "About" */
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #374151;
+    /* Dark gray text */
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #2563eb;
+    /* Blue hover */
+}
+
+.social-links {
+    display: flex;
+    gap: 1.5rem;
+    /* Space between social icons */
+}
+
+.social-links a {
+    color: #4b5563;
+    /* Medium gray icons */
+    font-size: 1.5rem;
+    /* Make icons a bit larger */
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #1f2937;
+    /* Darker hover for icons */
+}
+
+.footer-motto {
+    font-size: 0.875rem;
+    /* Small text for the motto */
+    color: #6b7280;
+    /* Lighter gray text */
+    margin: 0;
+    /* Removes default paragraph margin */
+    line-height: 1.5;
+}
+
+/* This is the responsive part you asked for */
+@media (min-width: 640px) {
+
+    /* sm */
+    .footer-nav {
+        flex-direction: row;
+        /* Puts links and social icons side-by-side on larger screens */
+    }
+}
+
+/* === Back Button ===  */
+.back-link-container {
+    max-width: 450px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    /* padding-bottom: 5rem;; */
+    box-sizing: border-box;
+}
+
+.btn-back {
+    display: inline-block;
+    margin-top: 2rem;
+    /* Space from the top of the screen */
+    padding: 0.6rem 1.2rem;
+    background-color: #444;
+    color: #f0f0f0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-back:hover {
+    background-color: #555;
+    color: #fff;
 }
 
 /* Adjust button position on desktop where mobile nav is hidden */

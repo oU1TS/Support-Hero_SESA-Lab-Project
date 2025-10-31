@@ -1,36 +1,56 @@
 <?php
+session_start();
 include("../connection.php");
 
+$step = 1; // We'll use this to control the form display
 $form_error = '';
 $form_success = false;
+$email_to_update = ''; // To hold the email between steps
 
-if (isset($_POST['submit'])) {
-    $username = trim($_POST['input_name']);
-    $type = $_POST['input_type'];
+// VERIFY USER 
+if (isset($_POST['submit_email'])) {
     $email = trim($_POST['input_email']);
+    $username = trim($_POST['input_name']);
+
+    if (empty($email) || empty($username)) {
+        $form_error = "Please enter both your email and username.";
+    } else {
+        $sql = "SELECT * FROM account WHERE email='$email' AND username='$username'";
+        $result = mysqli_query($conn, $sql);
+        
+        if (mysqli_num_rows($result) == 1) {
+            // User found! Proceed to step 2
+            $step = 2;
+            $email_to_update = $email; // Store email for the next step
+        } else {
+            $form_error = "No account found with that email and username combination.";
+        }
+    }
+}
+
+//  UPDATE PASSWORD
+if (isset($_POST['submit_password'])) {
+    $email_to_update = trim($_POST['email_to_update']);
     $password = trim($_POST['input_password']);
     $confirm = trim($_POST['input_password2']);
 
-    if (empty($username) || empty($type) || empty($email) || empty($password) || empty($confirm)) {
-        $form_error = "Please fill out all fields.";
+    if (empty($password) || empty($confirm)) {
+        $form_error = "Please enter and confirm your new password.";
+        $step = 2; // Keep user on step 2
     } else if ($password != $confirm) {
-        $form_error = "Passwords do not match. Please try again.";
+        $form_error = "Your new passwords do not match. Please try again.";
+        $step = 2; // Keep user on step 2
     } else {
-        // Check if email already exists
-        $sql_check = "select email from account where email='$email'";
-        $res_check = mysqli_query($conn, $sql_check);
-        if (mysqli_num_rows($res_check) > 0) {
-            $form_error = "An account with this email already exists. <a href='login.php'>Login instead?</a>";
+        // Passwords match, update the database
+        $sql = "UPDATE account SET password='$password' WHERE email='$email_to_update'";
+        $result = mysqli_query($conn, $sql);
+        
+        if ($result && mysqli_affected_rows($conn) == 1) {
+            // Success!
+            $form_success = true;
         } else {
-            // passing to the Database
-            $sql = "insert into account(email, password, username, type) values('$email','$password','$username','$type')";
-            $result = mysqli_query($conn, $sql);
-            if ($result) {
-                $form_success = true;
-                // header("location:login.php"); // Redirect on success
-            } else {
-                $form_error = "An error occurred. Please try again later.";
-            }
+            $form_error = "An error occurred while updating your password. Please try again.";
+            $step = 2; // Keep user on step 2
         }
     }
 }
@@ -41,9 +61,10 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Support Hero</title>
+    <title>Forgot Password - Support Hero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <!-- STYLES (Same as login.php) -->
     <style>
         body {
             margin: 0;
@@ -180,21 +201,22 @@ if (isset($_POST['submit'])) {
 
 <body>
     <div class="form-container">
-        <div class="back-link-container">
-            <a href="../Home Page/index.php" class="btn-back">
-                &larr; Go to Homepage
-            </a>
-            <br><br><br><br>
-        </div>
+
         <?php if ($form_success) { ?>
+            <!-- Show Success Message -->
             <div class="form-message">
-                <h3>Registration Successful!</h3>
-                <p>Your account has been created.</p>
+                <h3>Password Updated!</h3>
+                <p>Your password has been successfully reset.</p>
                 <p><a href="login.php">Click here to Login</a></p>
             </div>
-        <?php } else { ?>
+
+        <?php } else if ($step == 1) { ?>
+            <!-- STEP 1: Show Verify User Form -->
             <form method="POST" class="form">
-                <h2 style="text-align: center;">Registration Form</h2>
+                <h2>Forgot Password</h2>
+                <p style="text-align: center; color: #ccc; margin-top: -1rem; margin-bottom: 1.5rem;">
+                    Please enter your email and username to verify your account.
+                </p>
 
                 <?php if (!empty($form_error)) { ?>
                     <div class="form-error">
@@ -203,39 +225,54 @@ if (isset($_POST['submit'])) {
                 <?php } ?>
 
                 <div class="form-group">
-                    <label for="input_name">Username:</label>
-                    <input id="input_name" name="input_name" type="text" required>
-                </div>
-                <div class="form-group">
-                    <label for="input_type">User Type:</label>
-                    <select id="input_type" name="input_type" required>
-                        <option value="">-- Select your role --</option>
-                        <option value="provider">Provider</option>
-                        <option value="consumer">Consumer</option>
-                        <option value="donor">Donor</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label for="input_email">Email:</label>
                     <input id="input_email" name="input_email" type="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="input_password">Password:</label>
+                    <label for="input_name">Username:</label>
+                    <input id="input_name" name="input_name" type="text" required>
+                </div>
+                <div class="form-group">
+                    <input type="submit" name="submit_email" value="Verify Account">
+                </div>
+            </form>
+
+        <?php } else if ($step == 2) { ?>
+            <!-- STEP 2: Show New Password Form -->
+            <form method="POST" class="form">
+                <h2>Reset Password</h2>
+                <p style="text-align: center; color: #ccc; margin-top: -1rem; margin-bottom: 1.5rem;">
+                    Enter your new password below.
+                </p>
+
+                <?php if (!empty($form_error)) { ?>
+                    <div class="form-error">
+                        <?php echo $form_error; ?>
+                    </div>
+                <?php } ?>
+
+                <!-- Hidden field to pass the email to the next request -->
+                <input type="hidden" name="email_to_update" value="<?php echo htmlspecialchars($email_to_update); ?>">
+
+                <div class="form-group">
+                    <label for="input_password">New Password:</label>
                     <input id="input_password" name="input_password" type="password" required>
                 </div>
                 <div class="form-group">
-                    <label for="input_password2">Confirm Password:</label>
+                    <label for="input_password2">Confirm New Password:</label>
                     <input id="input_password2" name="input_password2" type="password" required>
                 </div>
                 <div class="form-group">
-                    <input type="submit" name="submit" value="Create Account">
-                </div>
-
-                <div style="text-align: center; font-size: 0.9rem; color: #ccc;">
-                    <p>Already have an account? <a href="login.php">Login here</a></p>
+                    <input type="submit" name="submit_password" value="Update Password">
                 </div>
             </form>
         <?php } ?>
+
+        <!-- General Links -->
+        <div style="text-align: center; font-size: 0.9rem; color: #ccc; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #444;">
+            <p>Remember your password? <a href="login.php">Login here</a></p>
+        </div>
+
     </div>
 </body>
 

@@ -1,161 +1,261 @@
+<?php
+session_start();
+
+// Check if the user is logged in. If not, redirect to login page.
+// Make sure the path to login.php is correct from this file's location.
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("location: ../Registration_Login/login.php");
+    exit;
+}
+
+// If the script continues, the user is logged in.
+// You can now safely use their session data.
+$username = $_SESSION['username'];
+$email = $_SESSION['email'];
+$user_type = $_SESSION['user_type'];
+
+include("../connection.php");
+
+$flag = 0; // 0=idle, 1=error, 2=success
+
+if (isset($_POST['submit'])) {
+    $service_name = trim($_POST['service_name']);
+    $service_type = $_POST['service_type'];
+    // Use session username/email if available, otherwise use the form's input
+    $username = isset($_SESSION['username']) ? $_SESSION['username'] : trim($_POST['input_name']);
+    $email = isset($_SESSION['email']) ? $_SESSION['email'] : trim($_POST['input_email']);
+    $deadline = trim($_POST['deadline']);
+    $details = $_POST['details'];
+    $compensation = trim($_POST['compensation']);
+
+    if (empty($service_name) || empty($service_type) || empty($username) || empty($email) || empty($deadline) || empty($details)) {
+        $flag = 1; // Error
+    } else {
+        // passing to the Database
+        $sql = "insert into service(service_name,service_type, username, email, deadline, details,compensation) values('$service_name','$service_type','$username','$email','$deadline','$details', '$compensation')";
+        $result = mysqli_query($conn, $sql);
+        if ($result) {
+            $flag = 2; // Success
+        } else {
+            $flag = 1; // Error
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Create Service - Support Hero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0;
-        }
-
-        .section {
+            font-family: 'Inter', sans-serif;
+            background-color: #202020;
+            color: #f0f0f0;
             min-height: 100vh;
-            background-color: #202020ff;
-            color: white;
-            /* margin: 0; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
         }
 
-        .sub-section {
+        .form-container {
             margin: auto;
-
             max-width: 500px;
-            padding: 20px;
+            width: 90%;
+            padding: 2.5rem;
             background-color: #333;
-            border-radius: 20px;
-            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .form {
-            padding: 10px;
+        .form-container h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            font-weight: 700;
         }
 
-        input,
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ccc;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        select,
         textarea {
             width: 100%;
-            padding: 5px;
+            padding: 0.8rem;
+            background-color: #444;
+            border: 1px solid #555;
+            border-radius: 6px;
+            color: #f0f0f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .input-hint {
+            font-size: 0.875rem;
+            color: #999;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #1d4ed8;
         }
 
         a {
-            color: white;
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
 
         a:hover {
-            transition: .3s ease;
-            color: #0096FF;
+            color: #93c5fd;
+            text-decoration: underline;
         }
 
-        
+        .form-message {
+            text-align: center;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid #444;
+        }
+
+        .form-message h3 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            color: #ffffff;
+        }
+
+        .form-message p {
+            margin-bottom: 1rem;
+        }
     </style>
-    <?php
-
-    include("../connection.php");
-
-
-
-    if (isset($_POST['submit'])) {
-
-        $service_name = trim($_POST['service_name']);
-        $service_type = $_POST['service_type'];
-        $username = trim($_POST['input_name']);
-        $email = trim($_POST['input_email']);
-        $deadline = trim($_POST['deadline']);
-        $details = $_POST['details'];
-        $compensation = trim($_POST['compensation']);
-    }
-    // $sql2 = "select email from table_1 where email='$email'";
-    
-    if (empty($service_name) || empty($service_type) || empty($username) || empty($email) || empty($deadline) || empty($details)) {
-        echo 'Please fill the form';
-        // } else if ($password != $confirm) {
-        // echo '<script>alert("Passwords do not match")</script>';
-        // } else if ($sql2) {
-        // echo '<script>alert("Email already exists")</script>';
-        $flag = 1;
-    } else {
-
-        // passing to the Database
-    
-        // $hash = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "insert into service(service_name,service_type, username, email, deadline, details,compensation) values('$service_name','$service_type','$username','$email','$deadline','$details', '$compensation')";
-        $result = mysqli_query($conn, $sql);
-        // if ($result) {
-        // echo '<script>alert("Signup successful")</script>';
-        // header("location:login.php");
-        // }
-        $flag = 2;
-    }
-    ?>
-
-
 </head>
 
 <body>
-
-    <div class="section">
-        <br>
-        <br>
-        <div class="sub-section">
+    <div class="form-container">
+        <div class="back-link-container">
+            <a href="../Home Page/index.php" class="btn-back">
+                &larr; Go to Homepage
+            </a>
+            <br><br><br><br>
+        </div>
+        <?php if ($flag == 0) { // Show form if idle ?>
             <form method="POST" class="form">
                 <h2 style="text-align: center;">Request a Service</h2>
-                <label for="service_name">Service Name: </label>
-                <input name="service_name" type="text" placeholder="give a short name for the request"><br><br>
-                <label for="service_type">Service Type: </label>
-                <!-- <input name="input_id" type="number"> -->
-                <select name="service_type">
-                    <option value="">--Select--</option>
-                    <option value="request">Request</option>
-                    <option value="offer">Offer</option>
-                    <!-- <option value="donor">Donor</option> -->
-                </select>
-                <br><br>
-                <label for="input_name">Username: </label>
-                <input name="input_name" type="text"><br><br>
-                <label for="input_email">Email: </label>
-                <input name="input_email" type="email"><br><br>
-                <label for="deadline">Deadline/Uptime: </label>
-                <input name="deadline" type="date"><br><br>
-                <label for="details">Details: </label>
-                <!-- <input name="details" type="message"> -->
-                <textarea name="details" rows="5" cols="40" placeholder="Enter your message here..."></textarea>
-                <br><br>
-                <label for="compensation">Compensation/Demand: </label>
-                <input name="compensation" type="number">&nbsp;(will be deducted from Balance in BDT)<br><br>
-                <div style="display:flex;justify-content:center;max-width:80px;"><input type="submit" name="submit">
+
+                <div class="form-group">
+                    <label for="service_name">Service Name:</label>
+                    <input id="service_name" name="service_name" type="text" placeholder="e.g., 'Website Design'" required>
                 </div>
 
+                <div class="form-group">
+                    <label for="service_type">Service Type:</label>
+                    <select id="service_type" name="service_type" required>
+                        <option value="">--Select Type--</option>
+                        <option value="request">I am Requesting this</option>
+                        <option value="offer">I am Offering this</option>
+                    </select>
+                </div>
+
+                <?php if (!isset($_SESSION['loggedin'])) { ?>
+                    <div class="form-group">
+                        <label for="input_name">Your Username:</label>
+                        <input id="input_name" name="input_name" type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="input_email">Your Email:</label>
+                        <input id="input_email" name="input_email" type="email" required>
+                    </div>
+                <?php } ?>
+
+                <div class="form-group">
+                    <label for="deadline">Deadline/Uptime:</label>
+                    <input id="deadline" name="deadline" type="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="details">Details:</label>
+                    <textarea id="details" name="details" rows="5" placeholder="Enter service details here..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="compensation">Compensation/Bounty (Will be deducted from balance):</label>
+                    <input id="compensation" name="compensation" type="number" placeholder="e.g., 5000">
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" name="submit" value="Submit Request/Offer">
+                </div>
             </form>
-            <?php
-            if (isset($flag)) {
-                if ($flag == 1) {
-                    // echo '<script>alert("Login Successful")</script>';
-                    echo '
-                        
-                        <div style="height:220px;padding-top:50px;text-align:center;">
-                        <hr>
-                        <br>
-                        <p style="font-size:2rem;">...</p>
-                        <p><a href="../Home Page/index.php#services">Go back</a></p>
-                        </div>';
-                    // header("location:Welcome.php");
-                } else if ($flag == 2) {
-                    // echo '<script>alert("Login Failed")</script>';
-                    echo '
-                        <div style="height:220px;padding-top:50px;text-align:center;">
-                        <hr>
-                        <br>
-                        <p style="font-size:2rem;">Entry Successful</p>
-                        <p><a href="../Home Page/index.php#services">Go back</a></p>
-                        </div>';
-                }
-            }
-            ?>
-        </div>
+
+        <?php } else { // Show success or error message ?>
+
+            <div class="form-message">
+                <?php if ($flag == 2) { ?>
+                    <h3>Entry Successful!</h3>
+                    <p>Your service has been posted.</p>
+                <?php } else if ($flag == 1) { ?>
+                        <h3>Error</h3>
+                        <p>Please fill out all fields correctly.</p>
+                <?php } ?>
+                <p><a href="../Home Page/index.php#services">Go back to Services</a></p>
+                <p><a href="request_offer.php">Post another service</a></p>
+            </div>
+
+        <?php } ?>
 
     </div>
-
 </body>
 
 </html>

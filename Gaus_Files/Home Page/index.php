@@ -1,5 +1,20 @@
 <!-- Home_Page(demo03) -->
 
+<?php
+session_start();
+
+// Check if the user is logged in and store the state in a variable
+$is_logged_in = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+
+if ($is_logged_in) {
+    // Grab user info if they are logged in
+    $username = $_SESSION['username'];
+    $user_type = $_SESSION['user_type'];
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,8 +71,15 @@
     <!-- Sticky Header -->
     <header id="sticky-header" class="sticky-header">
         <div class="container">
-            <a href="#account" class="btn btn-blue">Join us</a>
-            <a href="#services" class="btn btn-green">Services</a>
+            <?php if ($is_logged_in): ?>
+                <!-- MODIFIED: Show this if user is logged in -->
+                <span class="welcome-text">Welcome <?php echo $user_type; ?>, <?php echo $username; ?>!</span>
+                <a href="../Registration_Login/logout.php" class="btn btn-red">Logout</a>
+            <?php else: ?>
+                <!-- ORIGINAL: Show this if user is not logged in -->
+                <a href="#account" class="btn btn-blue">Join us</a>
+                <a href="#services" class="btn btn-green">Services</a>
+            <?php endif; ?>
         </div>
     </header>
 
@@ -93,7 +115,7 @@
             </div>
         </section> -->
 
-        <!-- Section 5: Services -->
+        <!-- Section 5: About -->
         <section id="about" class="full-screen-section" style="background-color: #f9fafb;">
             <div class="section-content">
                 <h2>About Our Mission</h2>
@@ -144,46 +166,65 @@
                 <?php
                 include("../connection.php");
 
-                $sql = "SELECT * FROM service LIMIT 6"; 
-                // Getting 6 services
+                // MODIFIED: Updated SQL query to get all the new fields.
+                // I am ASSUMING your columns are named 'id', 'service_type', 'username', 'deadline', 'compensation'
+                $sql = "SELECT service_id, service_name, details, service_type, username, deadline, compensation FROM service LIMIT 6";
                 $result = mysqli_query($conn, $sql);
                 ?>
 
-                <div class="grid-3">
+                <div class="service-list-container">
 
                     <?php
                     if (mysqli_num_rows($result) > 0) {
                         // Loop through each service from the database
                         while ($row = mysqli_fetch_assoc($result)) {
 
-                            // 2. Change 'service_name' and 'service_description'
-                            //    to your actual column names
+                            // 1. Get all the new data
+                            $service_id = $row['service_id'];
                             $service_name = htmlspecialchars($row['service_name']);
                             $service_desc = htmlspecialchars($row['details']);
+                            $service_type = htmlspecialchars($row['service_type']);
+                            $username = htmlspecialchars($row['username']);
+                            $deadline = htmlspecialchars(date("d M, Y", strtotime($row['deadline']))); // Format the date
+                            $compensation = htmlspecialchars($row['compensation']);
 
-                            // This is the HTML template for each service card
+                            // 2. Truncate the description to keep the list item small
+                            $details_snippet = substr($service_desc, 0, 100);
+                            if (strlen($service_desc) > 100) {
+                                $details_snippet .= '...'; // Add ellipsis if text is cut
+                            }
+
+                            // 3. MODIFIED: This is the new HTML template for each list item
                             echo '
-                        <div class="card">
-                            <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                </svg></div>
-                            <h3>' . $service_name . '</h3>
-                            <p>' . $service_desc . '</p>
+                        <div class="service-list-item">
+                            <div class="service-info">
+                                <h3>' . $service_name . '</h3>
+                                <p><strong>Provider:</strong> ' . $username . ' | <strong>Type:</strong> ' . $service_type . '</p>
+                                <p><strong>Compensation:</strong> ' . $compensation . ' | <strong>Deadline:</strong> ' . $deadline . '</p>
+                                <p class="service-desc-snippet">' . $details_snippet . '</p>
+                            </div>
+                            <div class="service-action">
+                                <a href="../Services/service_details.php?id=' . $service_id . '" class="btn btn-blue btn-small">View</a>
+                            </div>
                         </div>
                         ';
                         }
                     } else {
                         // This message shows if the database table is empty
-                        echo '<p>No services are currently available.</p>';
+                        echo '<p style="padding: 2rem;">No services are currently available.</p>';
                     }
                     ?>
 
                 </div>
                 <div style="margin-top: 2.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
-                    <a href="../Services/request_offer.php" class="btn btn-blue">Create a Service</a>
-                    <!-- <a href="../Services/offer.php" class="btn btn-green">Offer a Service</a> -->
+                    <?php if ($is_logged_in): ?>
+                        <a href="../Services/request_offer.php" class="btn btn-blue">Create a Service</a>
+                    <?php else: ?>
+                        <a href="../Registration_Login/login.php" class="btn btn-blue">Log in to Create
+                            Service</a>
+
+                    <?php endif; ?>
+
                 </div>
 
             </div>
@@ -194,36 +235,18 @@
         <section id="account" class="full-screen-section" style="background-color: white;">
             <div class="section-content">
                 <h2>Get involved</h2>
-                <div class="grid-3">
-                    <div class="card">
-                        <div class="card-icon">
-                            <!-- <img src="../icon/user-regular-full.svg" width="80px;" style="color: #0096FF;"> -->
-                            <i class="fa-regular fa-user" style="font-size:2.5rem;font-weight:bold;"></i>
-                        </div>
-                        <!-- <h3>Consumer Account</h3> -->
-                        <a href="../Registration_Login/login.php" class="btn btn-blue">User Login</a>
-                        <p>As a consumer, you can request for services or accept an existing offer. They are our core
-                            users.</p>
-                        <p>Don&apos;t have an account? <a href="../Registration_Login/registration_form.php">Create
-                                Account?</a></p>
+
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fa-regular fa-user" style="font-size:2.5rem;font-weight:bold;"></i>
                     </div>
-                    <!-- <div class="card">
-                        <div class="card-icon"><i class="fa-regular fa-user" style="font-size:2.5rem;font-weight:bold;"></i></div>
-                        <a href="../Registration_Login/registration_form.php" class="btn btn-green">Register as a
-                            Consumer</a>
-                        <p>As a consumer, you can request for services or accept an existing offer. They are our core
-                            users.</p>
-                        <p>Already registered? Go to <a href="../Registration_Login/login.php">Login</a></p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fa-regular fa-user" style="font-size:2.5rem;font-weight:bold;"></i></div>
-                        <a href="../Registration_Login/registration_form.php" class="btn btn-blue">Register as a
-                            Provider</a>
-                        <p>As a provider, you can accept a request or create an offer for the consumers. They areour
-                            main driving force.</p>
-                        <p>Already registered? Go to <a href="../Registration_Login/login.php">Login</a></p>
-                    </div> -->
+                    <a href="../Registration_Login/login.php" class="btn btn-blue">User Login</a>
+                    <p>Create services as a consumer or a provider. Help out the community by accepting requests and
+                        donating!</p>
+                    <p>Don&apos;t have an account? <a href="../Registration_Login/registration_form.php">Create
+                            Account?</a></p>
                 </div>
+            </div>
             </div>
         </section>
 
@@ -231,16 +254,21 @@
         <!-- Section 4: Accounts -->
         <section id="donation" class="full-screen-section" style="background-color: #f9fafb;">
             <div class="section-content">
-                <h2>Support Our Community</h2>
+                <h2>Become a Donor !</h2>
                 <p>Your donations help us maintain the platform, support our providers, and ensure that help is
                     available
                     to everyone, regardless of their ability to pay. Every contribution makes a difference.</p>
                 <p>Help us build a stronger, more connected community by making a contribution today.</p>
-                <a href="#payment-link" class="btn btn-blue" style="margin-top: 1.5rem;">Become a Donor</a>
+                <?php if ($is_logged_in): ?>
+                    <a href="../Services/donation.php" class="btn btn-blue" style="margin-top: 1.5rem;">Add to Balance</a>
+                <?php else: ?>
+                    <a href="../Registration_Login/login.php" class="btn btn-blue">Log in to Donate</a>
+
+                <?php endif; ?>
+
+
             </div>
         </section>
-
-
 
 
 
@@ -248,6 +276,26 @@
         <section id="contact" class="full-screen-section">
             <div class="section-content">
                 <h2>Contact Us</h2>
+
+                <!-- ADDED: New Footer Content -->
+                <footer class="site-footer">
+                    <div class="footer-nav">
+                        <div class="footer-links">
+                            <a href="mailto:gsmurady123@gmail.com">Email</a>
+                            <a href="#about">About</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/b1tranger/SESA-Lab-Project" target="_blank" title="GitHub"><i
+                                    class="fab fa-github"></i></a>
+                            <a href="https://www.linkedin.com/in/gaus-saraf-0471b81a4/" target="_blank"
+                                title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <p class="footer-motto">
+                        "Connecting those in need with those who can help. A community-driven support system."
+                    </p>
+                </footer>
+                <!-- END: New Footer Content -->
 
             </div>
         </section>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 25, 2025 at 11:48 AM
+-- Generation Time: Oct 31, 2025 at 08:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,18 +32,17 @@ CREATE TABLE `account` (
   `password` varchar(256) NOT NULL,
   `username` varchar(256) NOT NULL,
   `user_id` int(50) NOT NULL,
-  `type` varchar(256) NOT NULL
+  `type` varchar(256) NOT NULL,
+  `balance` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `account`
 --
 
-INSERT INTO `account` (`email`, `password`, `username`, `user_id`, `type`) VALUES
-('gsmurady123@gmail.com', '1234', 'Gaus', 5, 'provider'),
-('gsmurady123@gmail.com', '1234', 'Gaus', 6, 'provider'),
-('gsmurady123@gmail.com', '1234', 'Gaus', 7, 'consumer'),
-('gsmurady123@gmail.com', '1234', 'Gaus', 8, 'provider');
+INSERT INTO `account` (`email`, `password`, `username`, `user_id`, `type`, `balance`) VALUES
+('gsmurady123@gmail.com', '1234', 'Gaus', 6, 'provider', 1000.00),
+('masud@gmail.com', '12345', 'Masud', 9, 'consumer', 0.00);
 
 -- --------------------------------------------------------
 
@@ -67,9 +66,8 @@ CREATE TABLE `service` (
 --
 
 INSERT INTO `service` (`service_id`, `service_name`, `service_type`, `username`, `email`, `deadline`, `details`, `compensation`) VALUES
-(1, 'dfdsfdsfdsfdsf', 'request', 'fsdfdsf', 'gsmurady123@gmail.com', '2025-10-31', 'dfsdfds', 100),
-(2, 'dfdsfdsfdsfdsf', 'request', 'fsdfdsf', 'gsmurady123@gmail.com', '2025-10-31', 'gfgdsgfds', 100),
-(3, 'dfdsfdsfdsfdsf', 'request', 'fsdfdsf', 'gsmurady123@gmail.com', '2025-10-31', 'gfgdsgfds', 100);
+(4, 'Service 1', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfdsfdsfdsfdsds', 100),
+(5, 'Service 2', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfsdf', 100);
 
 --
 -- Indexes for dumped tables
@@ -95,13 +93,13 @@ ALTER TABLE `service`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `user_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
