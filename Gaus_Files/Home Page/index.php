@@ -10,6 +10,8 @@ if ($is_logged_in) {
     // Grab user info if they are logged in
     $username = $_SESSION['username'];
     $user_type = $_SESSION['user_type'];
+} else {
+    $user_type = '';
 }
 ?>
 
@@ -96,7 +98,11 @@ if ($is_logged_in) {
                 <h1>Welcome to Support Hero</h1>
                 <p>Connecting those in need with those who can help. A community-driven support system.</p>
                 <div id="hero-buttons">
-                    <a href="#account" class="btn btn-blue">Join Us</a>
+                    <?php if ($user_type == 'admin'): ?>
+                        <a href="admin.php" class="btn btn-blue">Dashboard</a>
+                    <?php else: ?>
+                        <a href="#account" class="btn btn-blue">Join Us</a>
+                    <?php endif; ?>
                     <a href="#services" class="btn btn-green">Services</a>
 
                 </div>
@@ -228,6 +234,7 @@ if ($is_logged_in) {
                             Service</a>
 
                     <?php endif; ?>
+                    <a href="../Services/service.php" class="btn btn-green">See Full list</a>
 
                 </div>
 

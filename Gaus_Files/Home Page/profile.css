@@ -1,17 +1,17 @@
 /* Import font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-/* --- Root Variables for Dark Theme --- */
+/* --- Root Variables for Light Theme --- */
 :root {
-    --bg-dark-primary: #1a1d24;     /* Main background */
-    --bg-dark-secondary: #2c303a;  /* Card/Sidebar background */
-    --border-dark: #44475a;        /* Borders */
-    --text-primary: #f8f8f2;       /* Main text */
-    --text-accent: #bd93f9;        /* Purple accent for headings */
-    --text-muted: #9a9a9a;         /* Muted text for notes */
-    --hover-dark: #44475a;         /* Hover for metric boxes */
-    --hover-link: #deabff;         /* Hover for links */
-    --shadow-color: rgba(0, 0, 0, 0.2);
+    --bg-primary: #f4f7fa;         /* Main background (light gray) */
+    --bg-secondary: #ffffff;       /* Card/Sidebar background (white) */
+    --border-color: #dee2e6;       /* Borders */
+    --text-primary: #212529;       /* Main text (dark gray) */
+    --text-accent: #007bff;         /* Accent color (blue) */
+    --text-muted: #6c757d;         /* Muted text (medium gray) */
+    --hover-bg: #f8f9fa;           /* Hover for metric boxes */
+    --hover-link: #0056b3;         /* Hover for links (darker blue) */
+    --shadow-color: rgba(0, 0, 0, 0.05); /* Softer shadow */
 }
 
 /* --- Basic Setup --- */
@@ -23,7 +23,7 @@ body {
     font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0; /* Padding moved to layout container */
-    background-color: var(--bg-dark-primary);
+    background-color: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
 }
@@ -33,28 +33,27 @@ body {
     display: flex;
     padding: 20px;
     gap: 20px;
-    align-items: flex-start; /* Align items to the top */
+    align-items: flex-start;
 }
 
 /* --- Detached Sidebar --- */
 .sidebar {
     width: 240px;
-    flex-shrink: 0; /* Prevent sidebar from shrinking */
-    background-color: var(--bg-dark-secondary);
+    flex-shrink: 0;
+    background-color: var(--bg-secondary);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 5px var(--shadow-color);
-    border: 1px solid var(--border-dark);
+    border: 1px solid var(--border-color);
     
-    /* Sticky position to stay in view */
     position: sticky;
     top: 20px; 
-    height: calc(100vh - 40px); /* Full height minus top/bottom padding */
-    overflow-y: auto; /* Add scroll if content is too long */
+    height: calc(100vh - 40px);
+    overflow-y: auto;
 }
 
 .sidebar-header {
-    border-bottom: 1px solid var(--border-dark);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 15px;
     margin-bottom: 15px;
 }
@@ -87,14 +86,14 @@ body {
 }
 
 .sidebar a:hover {
-    background-color: var(--hover-dark);
+    background-color: var(--hover-bg);
     color: var(--hover-link);
 }
 
 /* --- Main Content Area --- */
 .main-content {
-    flex: 1; /* Take remaining space */
-    min-width: 0; /* Prevent flex overflow */
+    flex: 1;
+    min-width: 0;
 }
 
 .dashboard-container {
@@ -107,7 +106,7 @@ body {
     margin-bottom: 40px;
     position: relative;
     display: inline-block;
-    color: var(--text-accent); /* Make title stand out */
+    color: var(--text-primary); /* Main text color for title */
 }
 
 .dashboard-container h1::after {
@@ -117,7 +116,7 @@ body {
     right: 0;
     bottom: -10px;
     height: 2px;
-    background-color: var(--text-accent); /* Match title color */
+    background-color: var(--text-accent); /* Accent color for underline */
 }
 
 .dashboard-content {
@@ -128,24 +127,24 @@ body {
     align-items: flex-start;
 }
 
-/* --- Card Styles (Dark Theme) --- */
-.admin-info-card,
+/* --- Card Styles (Light Theme) --- */
+.info-card,  /* Renamed from .admin-info-card */
 .overview-card {
-    background-color: var(--bg-dark-secondary);
-    border: 1px solid var(--border-dark);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 5px var(--shadow-color);
     text-align: left;
 }
 
-.admin-info-card {
+.info-card {
     flex: 1;
     min-width: 280px;
     max-width: 350px;
 }
 
-.admin-info-card h2,
+.info-card h2,
 .overview-card h2 {
     margin-top: 0;
     font-size: 1.5em;
@@ -153,7 +152,7 @@ body {
     color: var(--text-primary);
 }
 
-.admin-info-card p {
+.info-card p {
     margin: 10px 0;
     font-size: 1em;
 }
@@ -161,7 +160,7 @@ body {
 .overview-card {
     flex: 2;
     min-width: 320px;
-    max-width: 100%; /* Allow it to fill space */
+    max-width: 100%;
 }
 
 .overview-note {
@@ -170,7 +169,7 @@ body {
     margin-bottom: 25px;
 }
 
-/* --- Metrics Grid (Dark Theme) --- */
+/* --- Metrics Grid (Light Theme) --- */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -178,10 +177,9 @@ body {
     margin-bottom: 25px;
 }
 
-/* This now styles both <div> and <a> tags */
 .metric-item {
-    background-color: var(--bg-dark-primary); /* Darker than card */
-    border: 1px solid var(--border-dark);
+    background-color: var(--bg-primary); /* Light gray, same as body */
+    border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 20px 10px;
     text-align: center;
@@ -189,44 +187,40 @@ body {
     transition: background-color 0.2s ease, transform 0.2s ease;
     min-height: 60px;
     
-    /* Flex settings for vertical centering */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    /* Styles for <a> tag */
     text-decoration: none;
     color: var(--text-primary);
     cursor: pointer;
 }
 
 .metric-item p {
-    margin: 0; /* Remove default p margin */
+    margin: 0;
     line-height: 1.4;
 }
 
 .metric-item:hover {
-    background-color: var(--hover-dark);
+    background-color: var(--hover-bg); /* Slightly different light gray */
     transform: translateY(-2px);
-    color: var(--hover-link); /* Change text color on hover */
+    color: var(--hover-link);
 }
 
-/* Make non-link metric items not change color on hover */
 .metric-item:not(a):hover {
     color: var(--text-primary);
     cursor: default;
 }
 
-
-.analysis-note {
+.analysis-note { /* Kept this class in case you want to add it back */
     font-size: 0.9em;
     color: var(--text-muted);
     text-align: right;
     margin-top: 20px;
 }
 
-/* --- Mobile-specific adjustments --- */
+/* --- Mobile-specific adjustments (Identical to admin.css) --- */
 @media (max-width: 900px) {
     .dashboard-layout {
         flex-direction: column;
@@ -234,9 +228,9 @@ body {
     }
 
     .sidebar {
-        position: static; /* No longer sticky */
+        position: static;
         width: 100%;
-        height: auto; /* Fit content */
+        height: auto;
     }
 
     .dashboard-container h1 {
@@ -249,13 +243,12 @@ body {
         gap: 20px;
     }
 
-    .admin-info-card,
+    .info-card,
     .overview-card {
         max-width: 100%;
     }
 
-    /* Order on mobile: Overview first, then Admin Info */
-    .admin-info-card {
+    .info-card {
         order: 2;
     }
 
@@ -284,7 +277,7 @@ body {
         font-size: 1.8em;
     }
 
-    .admin-info-card h2,
+    .info-card h2,
     .overview-card h2 {
         font-size: 1.3em;
     }

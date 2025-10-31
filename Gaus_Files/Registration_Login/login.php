@@ -21,6 +21,7 @@ if (isset($_POST['submit'])) {
         $_SESSION['loggedin'] = true;
         $_SESSION['username'] = $row['username'];
         $_SESSION['email'] = $row['email'];
+        $_SESSION['user_id'] = $row['user_id'];
         if ($type == "") {
             $_SESSION['user_type'] = 'admin';
         } else {
