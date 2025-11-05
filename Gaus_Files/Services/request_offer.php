@@ -27,6 +27,7 @@ if (isset($_POST['submit'])) {
     $email = isset($_SESSION['email']) ? $_SESSION['email'] : trim($_POST['input_email']);
     $deadline = trim($_POST['deadline']);
     $details = $_POST['details'];
+
     $compensation = trim($_POST['compensation']);
 
     if (empty($service_name) || empty($service_type) || empty($username) || empty($email) || empty($deadline) || empty($details)) {

@@ -213,7 +213,7 @@ if (isset($_POST['submit_feedback'])) {
             </div>
         <?php } else { ?>
             <!-- SHOW FEEDBACK FORM -->
-            <form method="POST" action="feedback_form.php" class="form">
+            <form method="POST" action="feedback_user.php" class="form">
                 <h2>Submit Feedback</h2>
                 
                 <div style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;">

@@ -44,6 +44,7 @@ $result = mysqli_query($conn, $sql);
                     $service_id = $row['service_id'];
                     $service_name = htmlspecialchars($row['service_name']);
                     $service_desc = htmlspecialchars($row['details']);
+
                     $service_type = htmlspecialchars($row['service_type']); // 'request' or 'offer'
                     $service_poster = htmlspecialchars($row['username']); // The user who posted it
                     $deadline = htmlspecialchars(date("d M, Y", strtotime($row['deadline'])));

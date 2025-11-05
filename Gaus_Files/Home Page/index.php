@@ -23,29 +23,29 @@ if ($is_logged_in) {
 
 $comment_error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
-    if ($is_logged_in) {
-        $comment_text = trim($_POST['comment_text']);
-        $comment_subject = "Homepage Comment"; // Default subject
+    // if ($is_logged_in) {
+    $comment_text = trim($_POST['comment_text']);
+    $comment_subject = "Homepage Comment"; // Default subject
 
-        if (!empty($comment_text)) {
-            // Prepare and bind
-            $stmt = $conn->prepare("INSERT INTO comments (username, subject, comment_text, date_posted) VALUES (?, ?, ?, NOW())");
-            $stmt->bind_param("sss", $username, $comment_subject, $comment_text);
+    if (!empty($comment_text)) {
+        // Prepare and bind
+        $stmt = $conn->prepare("INSERT INTO comments (username, subject, comment_text, date_posted) VALUES (?, ?, ?, NOW())");
+        $stmt->bind_param("sss", $username, $comment_subject, $comment_text);
 
-            if ($stmt->execute()) {
-                // Redirect to prevent form resubmission
-                header("Location: index.php#comments");
-                exit;
-            } else {
-                $comment_error = "Error: Could not post comment.";
-            }
-            $stmt->close();
+        if ($stmt->execute()) {
+            // Redirect to prevent form resubmission
+            header("Location: index.php#comments");
+            exit;
         } else {
-            $comment_error = "Comment cannot be empty.";
+            $comment_error = "Error: Could not post comment.";
         }
+        $stmt->close();
     } else {
-        $comment_error = "You must be logged in to comment.";
+        $comment_error = "Comment cannot be empty.";
     }
+    // } else {
+    // $comment_error = "You must be logged in to comment.";
+    // }
 }
 ?>
 
@@ -131,8 +131,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
                                 style="font-size: 1.8rem;"></i></a></li>
                     <li><a href="#services" title="Services"><i class="fa-solid fa-list"
                                 style="font-size: 1.8rem;"></i></a></li>
-                    <li><a href="#account" title="Services"><i class="fa-solid fa-inbox"
-                                style="font-size: 1.8rem;"></i></a></li>
+                    <?php if (!$is_logged_in): ?>
+                        <li><a href="#account" title="Accounts"><i class="fa-solid fa-inbox"
+                                    style="font-size: 1.8rem;"></i></a>
+                        </li>
+                    <?php else: ?>
+                        <li><a href="#transactions" title="Transactions"><i class="fa-solid fa-receipt"
+                                    style="font-size: 1.8rem;"></i></a>
+                        </li>
+                    <?php endif ?>
                     <li><a href="#donation" title="Donation"><i class="fa-solid fa-hand-holding-medical"
                                 style="font-size: 1.8rem;"></i></a></li>
                     <li><a href="#contact" title="Contact"><i class="fa-solid fa-envelope"
@@ -148,8 +155,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
                             style="font-size: 1.8rem;"></i></a></li>
                 <li><a href="#services" title="Services"><i class="fa-solid fa-list" style="font-size: 1.8rem;"></i></a>
                 </li>
-                <li><a href="#account" title="Services"><i class="fa-solid fa-inbox" style="font-size: 1.8rem;"></i></a>
-                </li>
+                <?php if (!$is_logged_in): ?>
+                    <li><a href="#account" title="Accounts"><i class="fa-solid fa-inbox" style="font-size: 1.8rem;"></i></a>
+                    </li>
+                <?php else: ?>
+                    <li><a href="#transactions" title="Transactions"><i class="fa-solid fa-receipt"
+                                style="font-size: 1.8rem;"></i></a>
+                    </li>
+                <?php endif ?>
                 <li><a href="#donation" title="Donation"><i class="fa-solid fa-hand-holding-medical"
                             style="font-size: 1.8rem;"></i></a></li>
                 <li><a href="#contact" title="Contact"><i class="fa-solid fa-envelope"
@@ -330,46 +343,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
             </div>
         </section>
 
+        <?php if (!$is_logged_in): ?>
+            <!-- Section 4: Accounts -->
+            <section id="account" class="full-screen-section" style="background-color: white;">
+                <div class="section-content">
+                    <h2>Get involved</h2>
 
-        <!-- Section 4: Accounts -->
-        <section id="account" class="full-screen-section" style="background-color: white;">
-            <div class="section-content">
-                <h2>Get involved</h2>
-
-                <div class="card">
-                    <div class="card-icon">
-                        <i class="fa-regular fa-user" style="font-size:2.5rem;font-weight:bold;"></i>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fa-regular fa-user" style="font-size:2.5rem;font-weight:bold;"></i>
+                        </div>
+                        <a href="../Registration_Login/login.php" class="btn btn-blue">User Login</a>
+                        <p>Create services as a consumer or a provider. Help out the community by accepting requests and
+                            donating!</p>
+                        <p>Don&apos;t have an account? <a href="../Registration_Login/registration_form.php">Create
+                                Account?</a></p>
                     </div>
-                    <a href="../Registration_Login/login.php" class="btn btn-blue">User Login</a>
-                    <p>Create services as a consumer or a provider. Help out the community by accepting requests and
-                        donating!</p>
-                    <p>Don&apos;t have an account? <a href="../Registration_Login/registration_form.php">Create
-                            Account?</a></p>
                 </div>
-            </div>
-            </div>
-        </section>
-
-
-        <!-- Section 5: Donations -->
-        <section id="donation" class="full-screen-section" style="background-color: #f9fafb;">
-            <div class="section-content">
-                <h2>Become a Donor !</h2>
-                <p>Your donations help us maintain the platform, support our providers, and ensure that help is
-                    available
-                    to everyone, regardless of their ability to pay. Every contribution makes a difference.</p>
-                <p>Help us build a stronger, more connected community by making a contribution today.</p>
-                <?php if ($is_logged_in): ?>
-                    <a href="../Services/donation.php" class="btn btn-blue" style="margin-top: 1.5rem;">Add to Balance</a>
-                <?php else: ?>
-                    <a href="../Registration_Login/login.php" class="btn btn-blue">Log in to Donate</a>
-
-                <?php endif; ?>
-
-
-            </div>
-        </section>
-
+                </div>
+            </section>
+        <?php endif ?>
 
         <!-- Section 6: Transactions -->
         <section id="transactions" class="full-screen-section" style="background-color: #f9fafb;">
@@ -448,24 +441,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
             </div>
         </section>
 
+
+        <!-- Section 5: Donations -->
+        <section id="donation" class="full-screen-section" style="background-color: #f9fafb;">
+            <div class="section-content">
+                <h2>Become a Donor !</h2>
+                <p>Your donations help us maintain the platform, support our providers, and ensure that help is
+                    available
+                    to everyone, regardless of their ability to pay. Every contribution makes a difference.</p>
+                <p>Help us build a stronger, more connected community by making a contribution today.</p>
+                <?php if ($is_logged_in): ?>
+                    <a href="../Services/add_balance.php" class="btn btn-blue" style="margin-top: 1.5rem;">Add to
+                        Balance</a>
+                    <br>
+                    <a href="../Services/donation.php" class="btn btn-green" style="margin-top: 1.5rem;">Support us</a>
+                <?php else: ?>
+                    <a href="../Registration_Login/login.php" class="btn btn-blue">Log in to Donate</a>
+
+                <?php endif; ?>
+
+
+            </div>
+        </section>
+
+
+
         <!-- Comments -->
 
         <section id="comments" class="full-screen-section">
             <div class="section-content">
                 <h2>Post a Comment</h2>
 
-                
-                    <form action="index.php#comments" method="POST" class="comment-form">
-                        <label for="comment_text" style="display:none;">Your Comment</label>
-                        <textarea id="comment_text" name="comment_text" rows="4"
-                            placeholder="Write your comment, <?php echo htmlspecialchars($user_type); ?>..."
-                            required></textarea>
-                        <?php if ($comment_error): ?>
-                            <p style="color: red;"><?php echo $comment_error; ?></p>
-                        <?php endif; ?>
-                        <button type="submit" name="submit_comment" class="btn btn-blue">Post Comment</button>
-                    </form>
-              
+
+                <form action="index.php#comments" method="POST" class="comment-form">
+                    <label for="comment_text" style="display:none;">Your Comment</label>
+                    <textarea id="comment_text" name="comment_text" rows="4"
+                        placeholder="Write your comment, <?php echo htmlspecialchars($user_type); ?>..."
+                        required></textarea>
+                    <?php if ($comment_error): ?>
+                        <p style="color: red;"><?php echo $comment_error; ?></p>
+                    <?php endif; ?>
+                    <button type="submit" name="submit_comment" class="btn btn-blue">Post Comment</button>
+                </form>
+
 
                 <?php
                 // Fetch last 5 comments
@@ -501,11 +519,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
                     <a href="../Services/comments.php" class="btn btn-green">See All Comments</a>
                 </div>
 
-                
-  
-   
 
-    
+
+
+
+
             </div>
         </section>
 
