@@ -81,10 +81,10 @@
         }
     ?>
     <div class="dashboard-container">
-        <?php include 'partials/sidebar.php'; ?>
+        <?php include 'sidebar.php'; ?>
 
         <main class="main-content">
-            <?php include 'partials/header.php'; ?>
+            <?php include 'header.php'; ?>
 
             <div class="details-container">
                 <div class="details-header">
@@ -143,4 +143,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
