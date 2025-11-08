@@ -232,7 +232,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
                 <p>Support Hero is a platform designed to bridge the gap between consumers seeking services and
                     providers ready to offer them. Our unique model allows for direct compensation and community-driven
                     donations, creating a sustainable and supportive ecosystem.</p>
-                <a href="../Services/achievement.php" class="btn btn-blue" style="margin: 20px;">See Our Achievements</a>
+                <a href="../Services/achievement.php" class="btn btn-blue" style="margin: 20px;">See Our
+                    Achievements</a>
                 <p>Whether you need help with daily tasks, professional services, or emergency support, our network of
                     vetted providers is here for you. Join us in building a stronger, more connected community.</p>
 
@@ -378,24 +379,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
 
                 <?php
                 // We assume $conn is still open from the previous section
-                // If not, you'd add: include("../connection.php");
                 
-                // New SQL query to get recent transactions and the service name
+                // --- MODIFIED: Added t.timestamp to the query ---
                 $sql_trans = "SELECT 
                                 t.transaction_id, 
                                 t.user_id,  
                                 t.amount, 
-                                t.report
+                                t.report,
+                                t.timestamp 
                             FROM 
                                 transactions t 
-                            
                             ORDER BY 
                                 t.transaction_id DESC 
                             LIMIT 5";
 
                 $result_trans = mysqli_query($conn, $sql_trans);
-                $receiver = 'System';
-                $date = 'random date';
+                $receiver = 'System'; // This remains a static placeholder
                 ?>
 
                 <div class="service-list-container">
@@ -407,14 +406,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
 
                             // 1. Get all the transaction data
                             $sender = htmlspecialchars($row['user_id']);
-                            // $receiver = htmlspecialchars($row['receiver_username']);
                             $amount = htmlspecialchars($row['amount']);
                             $report = htmlspecialchars($row['report']);
-                            // $date = htmlspecialchars(date("d M, Y, g:i a", strtotime($row['created_at']))); // Format the date and time
-                    
-                            // Check if service_name is NULL (e.g., general donation)
-                            // $service_name = $row['service_name'] ? htmlspecialchars($row['service_name']) : 'General Donation';
-                    
+
+                            // --- MODIFIED: Fetch and format the real timestamp ---
+                            $date = htmlspecialchars(date("d M, Y, g:i a", strtotime($row['timestamp'])));
 
                             // 2. This is the new HTML template for each transaction item
                             echo '
@@ -422,7 +418,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
                         <div class="service-info" style="margin-right: 0;"> 
                         <h3>' . $amount . ' BDT Transferred</h3>
                                 <p><strong>From:</strong> ' . $sender . ' | <strong>To:</strong> ' . $receiver . '</p>
-                                <p><strong>Summary:</strong> ' . $report . ' | <strong>Date:</strong> ' . $date . '</p>
+                                <p><strong>Summary:</strong> ' . $report . ' | Date:</strong> ' . $date . '</p>
                             </div>
                             
                         </div>
@@ -466,6 +462,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
                     <a href="../Registration_Login/login.php" class="btn btn-blue">Log in to Donate</a>
 
                 <?php endif; ?>
+                <div style="text-align: left;">
+                    <p><strong>How it works:</strong></p>
+                    <ul>
+                        <li>All payments are processed through a debit transaction system similar to bKash.</li>
+                        <li>Before making any transactions, you must add an equal or greater amount to your account
+                            balance.</li>
+                        <li>When you donate or make a payment, the amount will be deducted from your account balance.
+                        </li>
+                        <li>To maintain transparency, all transaction records are displayed on the homepage.
+                            <a href="#transactions">Click here to view</a>.
+                        </li>
+                    </ul>
+                </div>
+
 
 
             </div>

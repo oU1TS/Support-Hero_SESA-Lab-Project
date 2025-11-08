@@ -1,4 +1,6 @@
 <?php
+
+include("../connection.php");
 session_start();
 
 // 1. REQUIRE LOGIN
@@ -14,9 +16,10 @@ $email = $_SESSION['email'];
 $user_type = $_SESSION['user_type']; // 'consumer' or 'provider'
 $user_id = $_SESSION['user_id'];
 
-include("../connection.php");
+
 
 $flag = 0; // 0=idle, 1=error, 2=success
+$error_message = ''; // --- NEW --- Variable to hold specific error messages
 
 // 3. SET SERVICE TYPE BASED ON USER ROLE
 $service_type_value = '';
@@ -49,58 +52,102 @@ if (isset($_POST['submit'])) {
     $details = $_POST['details'];
     $compensation = (int) trim($_POST['compensation']);
     $worker_limit = (int) trim($_POST['worker_limit']);
-    $status_default = 'incomplete'; // As requested in your SQL
+    $status_default = 'pending'; // As requested in your SQL
 
     // Validate inputs
     if (empty($service_name) || empty($service_type) || empty($deadline) || empty($details) || $compensation < 0 || $worker_limit <= 0) {
         $flag = 1; // Error
+        $error_message = "Please fill out all fields correctly. Ensure compensation and worker limit are valid numbers."; // --- MODIFIED ---
     } else {
 
-        // 5. USE PREPARED STATEMENT (Prevents SQL Injection)
-        $sql = "INSERT INTO service (service_name, service_type, username, email, deadline, details, compensation, status, worker_limit) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // --- NEW: BALANCE CHECK LOGIC ---
+        $balance_sufficient = true; // Assume true unless check fails
 
-        $stmt = $conn->prepare($sql);
-        // s = string, i = integer
-        $stmt->bind_param(
-            "ssssssisi",
-            $service_name,
-            $service_type,
-            $username,
-            $email,
-            $deadline,
-            $details,
-            $compensation,
-            $status_default,
-            $worker_limit
-        );
+        // Only check balance for consumers posting a request with a cost
+        if ($user_type == 'consumer' && $service_type == 'request' && $compensation > 0) {
 
-        // 6. EXECUTE AND UPDATE BALANCE (IF NEEDED)
-        if ($stmt->execute()) {
-            $flag = 2; // Success
+            // Query for the user's current balance
+            $sql_balance = "SELECT balance FROM account WHERE user_id = ?";
+            $stmt_check = $conn->prepare($sql_balance);
+            $stmt_check->bind_param("i", $user_id);
+            $stmt_check->execute();
+            $result = $stmt_check->get_result();
 
-            // --- FIXED LOGIC ---
-            // Only deduct balance if the user is a 'consumer' posting a 'request'
-            if ($service_type == 'request' && $user_type == 'consumer' && $compensation > 0) {
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $current_balance = $row['balance'];
 
-                // Deduct from balance
-                $sqlUpdateBalance = "UPDATE account SET balance = balance - ? WHERE user_id = ?";
-                $stmt_balance = $conn->prepare($sqlUpdateBalance);
-                $stmt_balance->bind_param("ii", $compensation, $user_id);
-                $stmt_balance->execute();
-
-                // Create transaction record
-                $sqlTransaction = "INSERT INTO transactions(user_id, amount, report) VALUES (?, ?, ?)";
-                $stmt_trans = $conn->prepare($sqlTransaction);
-                $report = "Funded service: " . substr($service_name, 0, 50);
-                $neg_compensation = -$compensation; // Store as negative for a withdrawal
-
-                $stmt_trans->bind_param("ids", $user_id, $neg_compensation, $report);
-                $stmt_trans->execute();
+                if ($current_balance < $compensation) {
+                    // --- NEW: Set flags and error message if balance is insufficient ---
+                    $balance_sufficient = false;
+                    $flag = 1;
+                    $error_message = "Insufficient funds. Your current balance is " . $current_balance . " BDT, but this request requires " . $compensation . " BDT.";
+                }
+            } else {
+                // This case should ideally not happen if user is logged in
+                $balance_sufficient = false;
+                $flag = 1;
+                $error_message = "Error: Could not retrieve your account balance.";
             }
+            $stmt_check->close();
+        }
+        // --- END OF NEW BALANCE CHECK ---
 
-        } else {
-            $flag = 1; // Error
+
+        // --- MODIFIED: Proceed only if all checks passed ---
+        if ($balance_sufficient && $flag == 0) {
+
+            // 5. USE PREPARED STATEMENT (Prevents SQL Injection)
+            $sql = "INSERT INTO service (user_id,service_name, service_type, username, email, deadline, details, compensation, status, worker_limit) 
+                    VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = $conn->prepare($sql);
+            // s = string, i = integer
+            $stmt->bind_param(
+                "issssssisi",
+                $user_id,
+                $service_name,
+                $service_type,
+                $username,
+                $email,
+                $deadline,
+                $details,
+                $compensation,
+                $status_default,
+                $worker_limit
+            );
+
+            // 6. EXECUTE AND UPDATE BALANCE (IF NEEDED)
+            if ($stmt->execute()) {
+                $flag = 2; // Success
+
+                // Only deduct balance if the user is a 'consumer' posting a 'request'
+                // This logic is the same, but now we know they have sufficient funds
+                if ($service_type == 'request' && $user_type == 'consumer' && $compensation > 0) {
+
+                    // Deduct from balance
+                    $sqlUpdateBalance = "UPDATE account SET balance = balance - ? WHERE user_id = ?";
+                    $stmt_balance = $conn->prepare($sqlUpdateBalance);
+                    $stmt_balance->bind_param("ii", $compensation, $user_id);
+                    $stmt_balance->execute();
+                    $stmt_balance->close();
+
+                    // Create transaction record
+                    $sqlTransaction = "INSERT INTO transactions(user_id, amount, report) VALUES (?, ?, ?)";
+                    $stmt_trans = $conn->prepare($sqlTransaction);
+                    $report = "Funded service: " . substr($service_name, 0, 50);
+                    $neg_compensation = -$compensation; // Store as negative for a withdrawal
+
+                    $stmt_trans->bind_param("ids", $user_id, $neg_compensation, $report);
+                    $stmt_trans->execute();
+                    $stmt_trans->close();
+                }
+
+            } else {
+                $flag = 1; // Error
+                $error_message = "A database error occurred. Please try again."; // --- MODIFIED ---
+            }
+            $stmt->close();
         }
     }
 }
@@ -240,7 +287,6 @@ if (isset($_POST['submit'])) {
 <body>
     <div class="form-container">
 
-        <!-- Back Link (using your btn styles) -->
         <a href="../Home_Page/index.php" class="btn btn-back"
             style="background-color: #444; color: #f0f0f0; padding: 0.6rem 1.2rem; text-decoration: none; border-radius: 6px; margin-bottom: 2rem; display: inline-block;">
             &larr; Go to Homepage
@@ -249,7 +295,6 @@ if (isset($_POST['submit'])) {
         <?php if ($flag == 0) { // Show form if idle ?>
             <form method="POST" class="form">
 
-                <!-- Title changes based on user type -->
                 <h2><?php echo ($service_type_value == 'request') ? 'Request a Service' : 'Offer a Service'; ?></h2>
 
                 <div class="form-group">
@@ -257,12 +302,9 @@ if (isset($_POST['submit'])) {
                     <input id="service_name" name="service_name" type="text" placeholder="e.g., 'Website Design'" required>
                 </div>
 
-                <!-- NEW: Readonly Service Type -->
                 <div class="form-group">
                     <label for="service_type_display">Service Type:</label>
-                    <!-- This hidden field sends the actual value -->
                     <input type="hidden" name="service_type" value="<?php echo $service_type_value; ?>">
-                    <!-- This field just shows the user what is selected and is read-only -->
                     <input id="service_type_display" name="service_type_display" type="text"
                         value="<?php echo $service_type_display; ?>" readonly>
                 </div>
@@ -278,13 +320,11 @@ if (isset($_POST['submit'])) {
                         required></textarea>
                 </div>
 
-                <!-- Label changes based on user type -->
                 <div class="form-group">
                     <label for="compensation"><?php echo $compensation_label; ?></label>
                     <input id="compensation" name="compensation" type="number" placeholder="e.g., 5000" min="0" required>
                 </div>
 
-                <!-- NEW: Worker Limit Field -->
                 <div class="form-group">
                     <label for="worker_limit">Worker Limit:</label>
                     <input id="worker_limit" name="worker_limit" type="number" value="1" min="1" required>
@@ -292,7 +332,6 @@ if (isset($_POST['submit'])) {
                 </div>
 
                 <div class="form-group">
-                    <!-- Button text changes based on user type -->
                     <input type="submit" name="submit" value="Submit <?php echo ucfirst($service_type_value); ?>">
                 </div>
             </form>
@@ -303,12 +342,15 @@ if (isset($_POST['submit'])) {
                 <?php if ($flag == 2) { ?>
                     <h3>Entry Successful!</h3>
                     <p>Your service has been posted.</p>
+                    <br>
+                    <p><a href="request_offer.php">Post another service</a></p>
                 <?php } else if ($flag == 1) { ?>
                         <h3>Error</h3>
-                        <p>Please fill out all fields correctly. Ensure compensation and worker limit are valid numbers.</p>
+                        <p><?php echo $error_message; ?></p>
+                        <br>
+                        <p><a href="../Services/add_balance.php">Add Balance</a></p><br>
                 <?php } ?>
-                <p><a href="../Home_Page/index.php#services">Go back to Services</a></p>
-                <p><a href="request_offer.php">Post another service</a></p>
+
             </div>
 
         <?php } ?>

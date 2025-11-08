@@ -3,15 +3,24 @@
 
 /* --- Root Variables for Light Theme --- */
 :root {
-    --bg-primary: #f4f7fa;         /* Main background (light gray) */
-    --bg-secondary: #ffffff;       /* Card/Sidebar background (white) */
-    --border-color: #dee2e6;       /* Borders */
-    --text-primary: #212529;       /* Main text (dark gray) */
-    --text-accent: #007bff;         /* Accent color (blue) */
-    --text-muted: #6c757d;         /* Muted text (medium gray) */
-    --hover-bg: #f8f9fa;           /* Hover for metric boxes */
-    --hover-link: #0056b3;         /* Hover for links (darker blue) */
-    --shadow-color: rgba(0, 0, 0, 0.05); /* Softer shadow */
+    --bg-primary: #f4f7fa;
+    /* Main background (light gray) */
+    --bg-secondary: #ffffff;
+    /* Card/Sidebar background (white) */
+    --border-color: #dee2e6;
+    /* Borders */
+    --text-primary: #212529;
+    /* Main text (dark gray) */
+    --text-accent: #007bff;
+    /* Accent color (blue) */
+    --text-muted: #6c757d;
+    /* Muted text (medium gray) */
+    --hover-bg: #f8f9fa;
+    /* Hover for metric boxes */
+    --hover-link: #0056b3;
+    /* Hover for links (darker blue) */
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    /* Softer shadow */
 }
 
 /* --- Basic Setup --- */
@@ -22,7 +31,8 @@
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;
-    padding: 0; /* Padding moved to layout container */
+    padding: 0;
+    /* Padding moved to layout container */
     background-color: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
@@ -45,9 +55,9 @@ body {
     padding: 20px;
     box-shadow: 0 2px 5px var(--shadow-color);
     border: 1px solid var(--border-color);
-    
+
     position: sticky;
-    top: 20px; 
+    top: 20px;
     height: calc(100vh - 40px);
     overflow-y: auto;
 }
@@ -98,7 +108,7 @@ body {
 
 .dashboard-container {
     width: 100%;
-    text-align: center;
+    /* Removed text-align: center; */
 }
 
 .dashboard-container h1 {
@@ -106,17 +116,26 @@ body {
     margin-bottom: 40px;
     position: relative;
     display: inline-block;
-    color: var(--text-primary); /* Main text color for title */
+    color: var(--text-primary);
+    /* Main text color for title */
+
+    /* Center the H1 */
+    display: block;
+    text-align: center;
 }
 
 .dashboard-container h1::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 50%;
+    /* Center the underline */
+    transform: translateX(-50%);
+    width: 100px;
+    /* Give it a fixed or max-width */
     bottom: -10px;
     height: 2px;
-    background-color: var(--text-accent); /* Accent color for underline */
+    background-color: var(--text-accent);
+    /* Accent color for underline */
 }
 
 .dashboard-content {
@@ -128,8 +147,11 @@ body {
 }
 
 /* --- Card Styles (Light Theme) --- */
-.info-card,  /* Renamed from .admin-info-card */
-.overview-card {
+.info-card,
+/* Renamed from .admin-info-card */
+.overview-card,
+.records-card {
+    /* --- NEW --- added .records-card */
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -145,7 +167,9 @@ body {
 }
 
 .info-card h2,
-.overview-card h2 {
+.overview-card h2,
+.records-card h2 {
+    /* --- NEW --- added .records-card h2 */
     margin-top: 0;
     font-size: 1.5em;
     margin-bottom: 20px;
@@ -178,7 +202,8 @@ body {
 }
 
 .metric-item {
-    background-color: var(--bg-primary); /* Light gray, same as body */
+    background-color: var(--bg-primary);
+    /* Light gray, same as body */
     border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 20px 10px;
@@ -186,7 +211,7 @@ body {
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.2s ease;
     min-height: 60px;
-    
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -203,7 +228,8 @@ body {
 }
 
 .metric-item:hover {
-    background-color: var(--hover-bg); /* Slightly different light gray */
+    background-color: var(--hover-bg);
+    /* Slightly different light gray */
     transform: translateY(-2px);
     color: var(--hover-link);
 }
@@ -213,7 +239,101 @@ body {
     cursor: default;
 }
 
-.analysis-note { /* Kept this class in case you want to add it back */
+/* --- NEW STYLES FOR SERVICE RECORDS --- */
+.records-card {
+    flex: 1 1 100%;
+    /* Make it full width */
+    max-width: 100%;
+    order: 3;
+    /* Display after info and overview */
+}
+
+.service-record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.service-record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* Allow wrapping on small screens */
+    gap: 10px;
+    /* Gap for wrapping */
+    padding: 15px;
+    background-color: var(--bg-primary);
+    /* Light gray bg */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.service-record-item:hover {
+    background-color: var(--hover-bg);
+    /* White hover */
+}
+
+.record-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    /* Allow info to grow */
+    min-width: 200px;
+    /* Prevent it from getting too squished */
+}
+
+.record-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1em;
+}
+
+.record-meta {
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.record-status {
+    flex-shrink: 0;
+    /* Prevent status from shrinking */
+}
+
+.status-badge {
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+/* Status colors (borrowed from service.css) */
+.status-badge.status-pending {
+    background-color: #fef3c7;
+    /* Yellow */
+    color: #92400e;
+}
+
+.status-badge.status-in-progress {
+    background-color: #dbeafe;
+    /* Blue */
+    color: #1d4ed8;
+}
+
+.status-badge.status-completed {
+    background-color: #d1fae5;
+    /* Green */
+    color: #065f46;
+}
+
+/* --- END OF NEW STYLES --- */
+
+
+.analysis-note {
+    /* Kept this class in case you want to add it back */
     font-size: 0.9em;
     color: var(--text-muted);
     text-align: right;
@@ -244,7 +364,9 @@ body {
     }
 
     .info-card,
-    .overview-card {
+    .overview-card,
+    .records-card {
+        /* --- NEW --- */
         max-width: 100%;
     }
 
@@ -254,6 +376,11 @@ body {
 
     .overview-card {
         order: 1;
+    }
+
+    .records-card {
+        order: 3;
+        /* --- NEW --- */
     }
 
     .metrics-grid {
@@ -278,7 +405,9 @@ body {
     }
 
     .info-card h2,
-    .overview-card h2 {
+    .overview-card h2,
+    .records-card h2 {
+        /* --- NEW --- */
         font-size: 1.3em;
     }
 }

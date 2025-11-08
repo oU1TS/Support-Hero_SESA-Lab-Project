@@ -13,8 +13,10 @@ include("../connection.php");
 $username = $_SESSION['username'];
 $user_type = $_SESSION['user_type'];
 
-// Fetch all transactions from the 'transaction' table
-$sql_get_transactions = "SELECT user_id, amount, transaction_id, report FROM transactions ORDER BY transaction_id DESC";
+// --- MODIFIED: Added `timestamp` to the query ---
+$sql_get_transactions = "SELECT user_id, amount, transaction_id, report, timestamp 
+                         FROM transactions 
+                         ORDER BY transaction_id DESC";
 $result_transactions = mysqli_query($conn, $sql_get_transactions);
 
 ?>
@@ -27,7 +29,7 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
     <meta http-equiv="refresh" content="10">
     <title>All Transactions - Support Hero</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    
+
     <style>
         body {
             margin: 0;
@@ -39,18 +41,21 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
             align-items: center;
             justify-content: center;
             padding: 2rem 0;
-            box-sizing: border-box; /* Added for better layout */
+            box-sizing: border-box;
+            /* Added for better layout */
         }
 
         .form-container {
             margin: auto;
-            max-width: 600px; /* Made wider for transaction details */
+            max-width: 600px;
+            /* Made wider for transaction details */
             width: 90%;
             padding: 2.5rem;
             background-color: #333;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            box-sizing: border-box; /* Added for better layout */
+            box-sizing: border-box;
+            /* Added for better layout */
         }
 
         .form-container h2 {
@@ -71,10 +76,11 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
             color: #93c5fd;
             text-decoration: underline;
         }
-        
+
         .btn-back {
             display: inline-block;
-            margin-bottom: 1.5rem; /* Space below button */
+            margin-bottom: 1.5rem;
+            /* Space below button */
             padding: 0.6rem 1.2rem;
             background-color: #444;
             color: #f0f0f0;
@@ -92,12 +98,16 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
 
         /* --- New Transaction List Styles --- */
         .transaction-list-wrapper {
-            background-color: #2a2a2a; /* Darker background for the list */
+            background-color: #2a2a2a;
+            /* Darker background for the list */
             border-radius: 8px;
-            overflow: hidden; /* To clip the corners of the list */
+            overflow: hidden;
+            /* To clip the corners of the list */
             border: 1px solid #444;
-            max-height: 60vh; /* Add a max-height for very long lists */
-            overflow-y: auto; /* Make the list scrollable if it's too long */
+            max-height: 60vh;
+            /* Add a max-height for very long lists */
+            overflow-y: auto;
+            /* Make the list scrollable if it's too long */
         }
 
         .transaction-list {
@@ -108,13 +118,14 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
 
         .transaction-item {
             display: flex;
-            flex-wrap: wrap; /* Allow wrapping */
+            flex-wrap: wrap;
+            /* Allow wrapping */
             justify-content: space-between;
             align-items: center;
             padding: 1rem 1.5rem;
             border-bottom: 1px solid #444;
         }
-        
+
         /* Remove border from the last item */
         .transaction-item:last-child {
             border-bottom: none;
@@ -123,8 +134,9 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
         .transaction-details {
             flex-grow: 1;
             /* Allow details to take up space, but also shrink */
-            min-width: 200px; 
-            margin-right: 1rem; /* Add space between details and amount */
+            min-width: 200px;
+            margin-right: 1rem;
+            /* Add space between details and amount */
         }
 
         .transaction-details p {
@@ -135,87 +147,100 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
 
         .transaction-details p strong {
             color: #f0f0f0;
-            min-width: 80px; /* Aligns the colons nicely */
+            min-width: 80px;
+            /* Aligns the colons nicely */
             display: inline-block;
         }
-        
+
         .transaction-details .report {
             font-size: 0.8rem;
             color: #999;
             font-style: italic;
-            word-break: break-all; /* Ensure long reports wrap */
+            word-break: break-all;
+            /* Ensure long reports wrap */
         }
 
         .transaction-amount {
             font-size: 1.25rem;
             font-weight: 700;
-            flex-shrink: 0; /* Prevent amount from shrinking */
+            flex-shrink: 0;
+            /* Prevent amount from shrinking */
         }
 
         /* Style amount based on transaction type */
         .amount-deposit {
-            color: #22c55e; /* Green */
+            color: #22c55e;
+            /* Green */
         }
+
         .amount-withdrawal {
-            color: #ef4444; /* Red */
+            color: #ef4444;
+            /* Red */
         }
+
         .amount-other {
-            color: #f0f0f0; /* White */
+            color: #f0f0f0;
+            /* White */
         }
-        
+
         /* --- ADDED: Responsive Media Query --- */
         @media (max-width: 480px) {
             .form-container {
                 width: 95%;
                 padding: 1.5rem;
             }
-            
+
             .transaction-item {
-                flex-direction: column; /* Stack items vertically */
-                align-items: flex-start; /* Align to the left */
-                gap: 0.5rem; /* Add space between details and amount */
+                flex-direction: column;
+                /* Stack items vertically */
+                align-items: flex-start;
+                /* Align to the left */
+                gap: 0.5rem;
+                /* Add space between details and amount */
             }
 
             .transaction-details {
-                 margin-right: 0; /* No right margin when stacked */
-                 width: 100%; /* Take full width */
+                margin-right: 0;
+                /* No right margin when stacked */
+                width: 100%;
+                /* Take full width */
             }
 
             .transaction-amount {
                 font-size: 1.1rem;
-                width: 100%; /* Take full width */
-                text-align: left; /* Align to the left */
+                width: 100%;
+                /* Take full width */
+                text-align: left;
+                /* Align to the left */
             }
         }
-
     </style>
 </head>
 
 <body>
 
     <div class="form-container">
-        
+
         <a href="../Home_Page/index.php" class="btn-back">
             &larr; Go to Homepage
         </a>
 
         <h2>Transaction History</h2>
-        <p style="text-align: center; font-size: 0.9rem; color: #999; margin-top: -1rem; margin-bottom: 1.5rem;">
-            This page automatically refreshes every 10 seconds.
-        </p>
-
         <div class="transaction-list-wrapper">
             <ul class="transaction-list">
 
                 <?php
                 if ($result_transactions && mysqli_num_rows($result_transactions) > 0) {
                     while ($row = mysqli_fetch_assoc($result_transactions)) {
-                        
+
                         // Sanitize output
                         $user_id = htmlspecialchars($row['user_id']);
-                        $amount = (float)$row['amount'];
+                        $amount = (float) $row['amount'];
                         $report = htmlspecialchars($row['report']);
                         $transaction_id = htmlspecialchars($row['transaction_id']); // Get ID
+                
+                        // --- ADDED: Fetch and format the timestamp ---
+                        $timestamp = htmlspecialchars(date("d M, Y, g:i a", strtotime($row['timestamp'])));
 
                         // Determine amount color and prefix based on value
                         if ($amount > 0) {
@@ -233,17 +258,16 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
                         echo '<li class="transaction-item">';
                         echo '  <div class="transaction-details">';
                         echo "      <p><strong>User ID:</strong> $user_id</p>";
-                        echo "      <p><strong>TXN ID:</strong> $transaction_id</p>"; // Added Transaction ID
+                        echo "      <p><strong>TXN ID:</strong> $transaction_id</p>";
+                        // --- ADDED: Display the timestamp ---
+                        echo "      <p><strong>Date:</strong> $timestamp</p>";
                         echo "      <p class='report'><strong>Report:</strong> $report</p>";
                         echo '  </div>';
-                        
-                        // This is the restored amount display
+
                         echo "  <div class='transaction-amount $amount_class'>";
                         echo "      " . $amount_prefix . number_format($amount, 2) . " BDT";
                         echo '  </div>';
-                        
-                        // THE BUG WAS HERE: The stray 'echo "</div>";' is now removed.
-                        
+
                         echo '</li>';
                     }
                 } else {
@@ -251,10 +275,11 @@ $result_transactions = mysqli_query($conn, $sql_get_transactions);
                     echo '<li class="transaction-item" style="justify-content: center; color: #999;">No transactions found.</li>';
                 }
                 ?>
-                
+
             </ul>
         </div>
 
     </div>
 </body>
+
 </html>

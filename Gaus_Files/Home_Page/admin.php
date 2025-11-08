@@ -14,6 +14,79 @@ if ($is_logged_in) {
     $user_id = $_SESSION['user_id'];
 }
 
+// Total Users
+$sql = "SELECT COUNT(user_id) AS total_users FROM account";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_1 = mysqli_fetch_assoc($result);
+    $TotalUser = $row_1['total_users'];
+} else {
+    $TotalUser = 0;
+}
+// Total Balance
+$sql = "SELECT SUM(balance) AS total_balance FROM account";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalBalance = $row_2['total_balance'];
+} else {
+    $TotalBalance = 0;
+}
+// Total Services
+$sql = "SELECT COUNT(service_id) AS total_service FROM service";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalServices = $row_2['total_service'];
+} else {
+    $TotalServices = 0;
+}
+// Total Requests
+$sql = "SELECT COUNT(service_id) AS total_service FROM service WHERE service_type='request' ";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalRequests = $row_2['total_service'];
+} else {
+    $TotalRequests = 0;
+}
+// Total Offers
+$sql = "SELECT COUNT(service_id) AS total_service FROM service WHERE service_type='offer' ";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalOffers = $row_2['total_service'];
+} else {
+    $TotalOffers = 0;
+}
+// Total Tasks
+$sql = "SELECT COUNT(task_id) AS total_tasks FROM tasks";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalTasks = $row_2['total_tasks'];
+} else {
+    $TotalTasks = 0;
+}
+// Total Feedback
+$sql = "SELECT COUNT(user_id) AS total_feedback FROM feedback ";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalFeedback = $row_2['total_feedback'];
+} else {
+    $TotalFeedback = 0;
+}
+// Total Comments
+$sql = "SELECT COUNT(date_posted) AS total_comments FROM comments";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    $row_2 = mysqli_fetch_assoc($result);
+    $TotalComments = $row_2['total_comments'];
+} else {
+    $TotalComments = 0;
+}
+
 ?>
 
 
@@ -26,84 +99,6 @@ if ($is_logged_in) {
     <title>Admin Dashboard</title>
     <!-- <link rel="stylesheet" href="admin.css"> -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <?php
-    include("../connection.php");
-
-    // Total Users
-    $sql = "SELECT COUNT(user_id) AS total_users FROM account";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_1 = mysqli_fetch_assoc($result);
-        $TotalUser = $row_1['total_users'];
-    } else {
-        $TotalUser = 0;
-    }
-    // Total Balance
-    $sql = "SELECT SUM(balance) AS total_balance FROM account";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalBalance = $row_2['total_balance'];
-    } else {
-        $TotalBalance = 0;
-    }
-    // Total Services
-    $sql = "SELECT COUNT(service_id) AS total_service FROM service";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalServices = $row_2['total_service'];
-    } else {
-        $TotalServices = 0;
-    }
-    // Total Requests
-    $sql = "SELECT COUNT(service_id) AS total_service FROM service WHERE service_type='request' ";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalRequests = $row_2['total_service'];
-    } else {
-        $TotalRequests = 0;
-    }
-    // Total Offers
-    $sql = "SELECT COUNT(service_id) AS total_service FROM service WHERE service_type='offer' ";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalOffers = $row_2['total_service'];
-    } else {
-        $TotalOffers = 0;
-    }
-    // Total Tasks
-    $sql = "SELECT COUNT(task_id) AS total_tasks FROM tasks";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalTasks = $row_2['total_tasks'];
-    } else {
-        $TotalTasks = 0;
-    }
-    // Total Feedback
-    $sql = "SELECT COUNT(user_id) AS total_feedback FROM feedback ";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalFeedback = $row_2['total_feedback'];
-    } else {
-        $TotalFeedback = 0;
-    }
-    // Total Comments
-    $sql = "SELECT COUNT(date_posted) AS total_comments FROM comments";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $row_2 = mysqli_fetch_assoc($result);
-        $TotalComments = $row_2['total_comments'];
-    } else {
-        $TotalComments = 0;
-    }
-
-
-    ?>
 
     <style>
         /* Import font */

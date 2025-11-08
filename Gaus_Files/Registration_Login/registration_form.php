@@ -191,6 +191,9 @@ if (isset($_POST['submit'])) {
                 <h3>Registration Successful!</h3>
                 <p>Your account has been created.</p>
                 <p><a href="login.php">Click here to Login</a></p>
+                <!-- <br><br> -->
+                <!-- <small style="color:white">Redirecting to Login</small> -->
+                <!-- <meta http-equiv="refresh" content="3;url=login.php"> -->
             </div>
         <?php } else { ?>
             <form method="POST" class="form">

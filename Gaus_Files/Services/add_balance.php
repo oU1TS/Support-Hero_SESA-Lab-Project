@@ -17,13 +17,20 @@ $current_balance = 0.00;
 $form_error = '';
 $flag = 0; // 0=idle, 1=error, 2=success
 
-// Fetch current balance
-$sql_get_balance = "SELECT balance FROM account WHERE username = '$username' AND type = '$user_type'";
-$result_get = mysqli_query($conn, $sql_get_balance);
-if ($result_get && mysqli_num_rows($result_get) == 1) {
-    $row = mysqli_fetch_assoc($result_get);
+// --- MODIFIED: Fetch current balance using prepared statement ---
+$sql_get_balance = "SELECT balance FROM account WHERE user_id = ?";
+$stmt_get = $conn->prepare($sql_get_balance);
+$stmt_get->bind_param("i", $user_id);
+$stmt_get->execute();
+$result_get = $stmt_get->get_result();
+
+if ($result_get && $result_get->num_rows == 1) {
+    $row = $result_get->fetch_assoc();
     $current_balance = (float) $row['balance'];
 }
+$stmt_get->close();
+// --- END OF MODIFICATION ---
+
 
 // 3. HANDLE FORM SUBMISSION
 if (isset($_POST['submit_donation'])) {
@@ -33,21 +40,44 @@ if (isset($_POST['submit_donation'])) {
         $flag = 1; // Error
         $form_error = "Please enter a positive amount to add (e.g., 50.00).";
     } else {
-        // Corrected SQL query to increment balance
-        $sql_update = "UPDATE account SET balance = balance + $donation_amount WHERE username = '$username' AND type = '$user_type'";
-        $result_update = mysqli_query($conn, $sql_update);
-        $sqlTransaction = "Insert into transactions(user_id, amount, report) values('$user_id','$donation_amount','Added to Balance')";
 
-        if ($result_update && mysqli_affected_rows($conn) > 0) {
+        // --- MODIFIED: Use prepared statements and transaction ---
+        $conn->begin_transaction();
+        try {
+            // 1. Update account balance
+            $sql_update = "UPDATE account SET balance = balance + ? WHERE user_id = ?";
+            $stmt_update = $conn->prepare($sql_update);
+            $stmt_update->bind_param("di", $donation_amount, $user_id);
+            $stmt_update->execute();
+
+            if ($stmt_update->affected_rows == 0) {
+                throw new Exception("Could not update balance.");
+            }
+
+            // 2. Create transaction record
+            // We don't need to specify `timestamp` as the DB handles it by default
+            $sqlTransaction = "INSERT INTO transactions(user_id, amount, report) VALUES (?, ?, ?)";
+            $stmt_trans = $conn->prepare($sqlTransaction);
+            $report = 'Added to Balance';
+            $stmt_trans->bind_param("ids", $user_id, $donation_amount, $report);
+            $stmt_trans->execute();
+
+            if ($stmt_trans->affected_rows == 0) {
+                throw new Exception("Could not create transaction record.");
+            }
+
+            // If both succeed, commit
+            $conn->commit();
             $flag = 2; // Success
-            // Update current balance for display
-            $current_balance = $current_balance + $donation_amount;
-            $transactionSQL = mysqli_query($conn, $sqlTransaction );
+            $current_balance = $current_balance + $donation_amount; // Update display
 
-        } else {
+        } catch (Exception $e) {
+            // If anything fails, roll back
+            $conn->rollback();
             $flag = 1;
-            $form_error = "An error occurred while updating your balance. Please try again.";
+            $form_error = "An error occurred. Please try again. " . $e->getMessage();
         }
+        // --- END OF MODIFICATION ---
     }
 }
 ?>
@@ -226,12 +256,16 @@ if (isset($_POST['submit_donation'])) {
 
 
     <div class="form-container">
-        <div class="back-link-container">
+        <!-- <div class="back-link-container">
             <a href="../Home_Page/index.php" class="btn-back">
                 &larr; Go to Homepage
             </a>
             <br><br><br><br>
-        </div>
+        </div> -->
+        <a href="../Home_Page/index.php" class="btn btn-back"
+            style="background-color: #444; color: #f0f0f0; padding: 0.6rem 1.2rem; text-decoration: none; border-radius: 6px; margin-bottom: 2rem; display: inline-block;">
+            &larr; Go to Homepage
+        </a>
         <form method="POST" class="form">
             <h2>Add to Balance</h2>
 

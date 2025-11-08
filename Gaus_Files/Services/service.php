@@ -9,12 +9,12 @@ $is_logged_in = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $user_type = $_SESSION['user_type'] ?? 'visitor';
 $username = $_SESSION['username'] ?? 'visitor';
 
-// MODIFIED SQL: Select worker_limit and clean up the status
-$sql = "SELECT service_id, service_name, details, service_type, username, deadline, compensation, 
+// MODIFIED SQL: Select user_id, worker_limit and clean up the status
+$sql = "SELECT service_id, user_id, service_name, details, service_type, username, deadline, compensation, 
                IF(status = '' OR status IS NULL, 'pending', status) as status, 
                accept_count, worker_limit 
         FROM service 
-        ORDER BY deadline ASC";
+        ORDER BY deadline ASC"; //
 
 $result = mysqli_query($conn, $sql);
 
@@ -47,6 +47,7 @@ $result = mysqli_query($conn, $sql);
                 while ($row = mysqli_fetch_assoc($result)) {
                     // Get data for each service
                     $service_id = $row['service_id'];
+                    $user_id = $row['user_id']; // --- ADDED THIS LINE ---
                     $service_name = htmlspecialchars($row['service_name']);
                     $service_desc = htmlspecialchars($row['details']);
 
@@ -98,7 +99,6 @@ $result = mysqli_query($conn, $sql);
                     }
                     ?>
 
-                    <!-- Service Card HTML -->
                     <div class="service-card" id="service-<?php echo $service_id; ?>">
                         <div class="card-header">
                             <h3><?php echo $service_name; ?></h3>
@@ -110,14 +110,16 @@ $result = mysqli_query($conn, $sql);
                         <div class="card-body">
                             <p class="service-meta" data-poster="<?php echo $service_poster; ?>"
                                 data-service-type="<?php echo $service_type; ?>">
-                                <strong>Posted by:</strong> <?php echo $service_poster; ?> |
+                                <strong>Posted by:</strong> <?php echo $service_poster; ?> (ID: <?php echo $user_id; ?>) |
                                 <strong>Type:</strong> <?php echo ucfirst($service_type); ?>
                             </p>
                             <p class="service-meta">
                                 <strong>Compensation:</strong> <?php echo $compensation; ?> |
                                 <strong>Deadline:</strong> <?php echo $deadline; ?>
                             </p>
-                            <p class="service-details"><?php echo $service_desc; ?></p>
+                            <p class="service-details"
+                                style="overflow-wrap: break-word; word-break: break-word; white-space: normal;">
+                                <?php echo $service_desc; ?></p>
                         </div>
                         <div class="card-actions">
                             <?php if ($show_accept_button): ?>
@@ -144,7 +146,6 @@ $result = mysqli_query($conn, $sql);
         </main>
     </div>
 
-    <!-- UPDATED JAVASCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const grid = document.querySelector('.service-grid');

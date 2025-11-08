@@ -8,7 +8,7 @@ if (isset($_POST['submit'])) {
     $email = trim($_POST['input_email']);
     $password = trim($_POST['input_password']);
     $type = $_POST['input_type'];
-    if ($type == ""){
+    if ($type == "") {
         $type = "admin";
     }
     $sql = "select * from account where email='$email' and password = '$password' and type='$type' ";
@@ -182,7 +182,10 @@ if (isset($_POST['submit'])) {
             <div class="form-message">
                 <h3>Login Successful</h3>
                 <p>Welcome back, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
-                <p><a href="../Home_Page/index.php">Browse the Website</a></p>
+                <!-- <p><a href="../Home_Page/index.php">Browse the Website</a></p> -->
+                 <br><br>
+                <small style="color:white">Redirecting to Homepage</small>
+                <meta http-equiv="refresh" content="3;url=../Home_Page/index.php">
             </div>
         <?php } else { ?>
             <form method="POST" class="form">

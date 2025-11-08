@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2025 at 05:11 PM
+-- Generation Time: Nov 08, 2025 at 06:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,8 @@ INSERT INTO `account` (`email`, `password`, `username`, `user_id`, `type`, `bala
 ('gaus.admin@gmail.com', 'admin1234', 'Gaus', 10, 'admin', 99.00),
 ('jubair.admin@gmail.com', 'admin1234', 'Jubair', 11, 'admin', 0.00),
 ('amit.admin@gmail.com', 'admin1234', 'Amit', 12, 'admin', 0.00),
-('zani.admin@gmail.com', 'admin1234', 'Zani', 13, 'admin', 0.00);
+('zani.admin@gmail.com', 'admin1234', 'Zani', 13, 'admin', 0.00),
+('gaus.gs12@gmail.com', '123', 'Saraf', 14, 'consumer', 96.00);
 
 -- --------------------------------------------------------
 
@@ -90,6 +91,7 @@ CREATE TABLE `feedback` (
 
 CREATE TABLE `service` (
   `service_id` int(100) NOT NULL,
+  `user_id` int(50) NOT NULL,
   `service_name` varchar(100) NOT NULL,
   `service_type` varchar(256) NOT NULL,
   `username` varchar(256) NOT NULL,
@@ -106,13 +108,12 @@ CREATE TABLE `service` (
 -- Dumping data for table `service`
 --
 
-INSERT INTO `service` (`service_id`, `service_name`, `service_type`, `username`, `email`, `deadline`, `details`, `compensation`, `status`, `accept_count`, `worker_limit`) VALUES
-(4, 'Service 1', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfdsfdsfdsfdsds', 100, '', 0, 0),
-(5, 'Service 2', 'request', 'Masud', 'masud@gmail.com', '2025-10-27', 'fdsfsdf', 100, '', 0, 0),
-(6, 'Service 3', 'request', 'Gaus', 'gsmurady123@gmail.com', '2025-11-01', 'temp', 200, '', 0, 0),
-(7, 'Service 4', 'offer', 'Gaus', 'gsmurady123@gmail.com', '2025-11-01', 'unga bunga', 55, '', 0, 0),
-(8, 'Service 4', 'offer', 'Gaus', 'gsmurady123@gmail.com', '2025-11-01', 'unga bunga', 55, '', 0, 0),
-(9, 'Service 4', 'offer', 'Gaus', 'gsmurady123@gmail.com', '2025-11-01', 'unga bunga', 55, '', 0, 0);
+INSERT INTO `service` (`service_id`, `user_id`, `service_name`, `service_type`, `username`, `email`, `deadline`, `details`, `compensation`, `status`, `accept_count`, `worker_limit`) VALUES
+(10, 0, 'demo service to check transaction', 'request', 'Gaus', 'gaus.gs12@gmail.com', '2025-11-09', 'demo details lorem ipsum', 200, 'pending', 1, 6),
+(11, 0, 'demo service  2 to check transaction', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', '1234', 200, 'completed', 1, 1),
+(12, 0, 'demo service  4 to check detail overflow', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', 'gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg', 200, 'pending', 0, 1),
+(13, 0, 'demo service  4 to check detail overflow', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', 'gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg', 200, 'pending', 0, 1),
+(14, 14, 'demo service  4 to check user_id', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', 'fsdfdsf', 0, 'pending', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -144,8 +145,9 @@ INSERT INTO `tasks` (`task_id`, `task_text`, `is_completed`, `date_created`) VAL
 CREATE TABLE `transactions` (
   `transaction_id` int(50) NOT NULL,
   `user_id` int(50) NOT NULL,
-  `amount` decimal(10,0) NOT NULL,
-  `report` varchar(256) NOT NULL
+  `amount` decimal(10,2) NOT NULL,
+  `report` varchar(256) NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -156,7 +158,14 @@ INSERT INTO `transactions` (`transaction_id`, `user_id`, `amount`, `report`) VAL
 (2, 6, 99, 'Added to Balance'),
 (3, 0, 0, 'Deducted from Balance'),
 (4, 0, 55, 'Deducted from Balance'),
-(5, 6, 55, 'Deducted from Balance');
+(5, 6, 55, 'Deducted from Balance'),
+(6, 14, -200, 'Funded service: demo service to check transaction'),
+(7, 14, -200, 'Funded service: demo service  2 to check transaction'),
+(8, 14, 400, 'Added to Balance'),
+(9, 14, 500, 'Added to Balance'),
+(10, 14, -4, 'Donation to Support Hero'),
+(11, 14, -200, 'Funded service: demo service  4 to check detail overflow'),
+(12, 14, -200, 'Funded service: demo service  4 to check detail overflow');
 
 --
 -- Indexes for dumped tables
@@ -194,13 +203,13 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `account`
 --
 ALTER TABLE `account`
-  MODIFY `user_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `user_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `tasks`
@@ -212,7 +221,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `transaction_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
