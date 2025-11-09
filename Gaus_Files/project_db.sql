@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 4.9.0.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 08, 2025 at 06:34 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: sql212.infinityfree.com
+-- Generation Time: Nov 09, 2025 at 05:35 PM
+-- Server version: 11.4.7-MariaDB
+-- PHP Version: 7.2.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `project_db`
+-- Database: `if0_40351225_project_db`
 --
 
 -- --------------------------------------------------------
@@ -41,13 +42,13 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`email`, `password`, `username`, `user_id`, `type`, `balance`) VALUES
-('gsmurady123@gmail.com', '1234', 'Gaus', 6, 'provider', 1034.00),
-('masud@gmail.com', '12345', 'Masud', 9, 'consumer', 0.00),
-('gaus.admin@gmail.com', 'admin1234', 'Gaus', 10, 'admin', 99.00),
-('jubair.admin@gmail.com', 'admin1234', 'Jubair', 11, 'admin', 0.00),
-('amit.admin@gmail.com', 'admin1234', 'Amit', 12, 'admin', 0.00),
-('zani.admin@gmail.com', 'admin1234', 'Zani', 13, 'admin', 0.00),
-('gaus.gs12@gmail.com', '123', 'Saraf', 14, 'consumer', 96.00);
+('gsmurady123@gmail.com', '1234', 'Gaus', 6, 'provider', '1034.00'),
+('masud@gmail.com', '12345', 'Masud', 9, 'consumer', '0.00'),
+('gaus.admin@gmail.com', 'admin1234', 'Gaus', 10, 'admin', '99.00'),
+('jubair.admin@gmail.com', 'admin1234', 'Jubair', 11, 'admin', '0.00'),
+('amit.admin@gmail.com', 'admin1234', 'Amit', 12, 'admin', '0.00'),
+('zani.admin@gmail.com', 'admin1234', 'Zani', 13, 'admin', '0.00'),
+('gaus.gs12@gmail.com', '123', 'Saraf', 14, 'consumer', '263.00');
 
 -- --------------------------------------------------------
 
@@ -67,7 +68,8 @@ CREATE TABLE `comments` (
 --
 
 INSERT INTO `comments` (`username`, `subject`, `comment_text`, `date_posted`) VALUES
-('Gaus', 'Homepage Comment', 'hello', '2025-11-01 13:58:48');
+('Gaus', 'Homepage Comment', 'hello', '2025-11-01 13:58:48'),
+('visitor', 'Homepage Comment', 'What up admin', '2025-11-07 22:39:24');
 
 -- --------------------------------------------------------
 
@@ -82,6 +84,13 @@ CREATE TABLE `feedback` (
   `message` text NOT NULL,
   `date_submitted` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `feedback`
+--
+
+INSERT INTO `feedback` (`user_id`, `username`, `subject`, `message`, `date_submitted`) VALUES
+(9, 'Masud', 'aroo bhalo korte hobe', 'jeta bollam shetai', '2025-11-09 09:22:37');
 
 -- --------------------------------------------------------
 
@@ -109,11 +118,8 @@ CREATE TABLE `service` (
 --
 
 INSERT INTO `service` (`service_id`, `user_id`, `service_name`, `service_type`, `username`, `email`, `deadline`, `details`, `compensation`, `status`, `accept_count`, `worker_limit`) VALUES
-(10, 0, 'demo service to check transaction', 'request', 'Gaus', 'gaus.gs12@gmail.com', '2025-11-09', 'demo details lorem ipsum', 200, 'pending', 1, 6),
-(11, 0, 'demo service  2 to check transaction', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', '1234', 200, 'completed', 1, 1),
-(12, 0, 'demo service  4 to check detail overflow', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', 'gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg', 200, 'pending', 0, 1),
-(13, 0, 'demo service  4 to check detail overflow', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', 'gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg', 200, 'pending', 0, 1),
-(14, 14, 'demo service  4 to check user_id', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-09', 'fsdfdsf', 0, 'pending', 0, 1);
+(15, 6, 'demo offer 1', 'offer', 'Gaus', 'gsmurady123@gmail.com', '2025-11-10', 'some details', 255, 'pending', 1, 5),
+(16, 14, 'demo request 1', 'request', 'Saraf', 'gaus.gs12@gmail.com', '2025-11-11', 'some more details', 333, 'pending', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -154,18 +160,9 @@ CREATE TABLE `transactions` (
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`transaction_id`, `user_id`, `amount`, `report`) VALUES
-(2, 6, 99, 'Added to Balance'),
-(3, 0, 0, 'Deducted from Balance'),
-(4, 0, 55, 'Deducted from Balance'),
-(5, 6, 55, 'Deducted from Balance'),
-(6, 14, -200, 'Funded service: demo service to check transaction'),
-(7, 14, -200, 'Funded service: demo service  2 to check transaction'),
-(8, 14, 400, 'Added to Balance'),
-(9, 14, 500, 'Added to Balance'),
-(10, 14, -4, 'Donation to Support Hero'),
-(11, 14, -200, 'Funded service: demo service  4 to check detail overflow'),
-(12, 14, -200, 'Funded service: demo service  4 to check detail overflow');
+INSERT INTO `transactions` (`transaction_id`, `user_id`, `amount`, `report`, `timestamp`) VALUES
+(13, 14, '500.00', 'Added to Balance', '2025-11-09 09:20:23'),
+(14, 14, '-333.00', 'Funded service: demo request 1', '2025-11-09 09:20:34');
 
 --
 -- Indexes for dumped tables
@@ -209,7 +206,7 @@ ALTER TABLE `account`
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `service_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `tasks`
@@ -221,7 +218,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `transaction_id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
