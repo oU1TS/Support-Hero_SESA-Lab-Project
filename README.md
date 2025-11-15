@@ -11,6 +11,9 @@ Submitted by	:
 3. Gaus Saraf Murady (088)
 4. Md. Jubair Ahammed (112)
 
+# SRS Report
+- [v2.2 SRS Report - Support Hero.pdf](https://github.com/user-attachments/files/23560535/v2.2.SRS.Report.-.Support.Hero.pdf)
+
 # Live Website
 - group-07.infinityfreeapp.com/
 
