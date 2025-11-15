@@ -13,6 +13,12 @@ Submitted by	:
 
 # SRS Report
 - [v2.2 SRS Report - Support Hero.pdf](https://github.com/user-attachments/files/23560535/v2.2.SRS.Report.-.Support.Hero.pdf)
+- Updates needed:
+> - "Donor" system is integrated with all users, or any user can donate.
+> - Donation done using a Debit transaction system where the users recharge a balance account before spending from it
+> - Update diagrams for the final donation system (We may change to Payment Gateways in the future)
+> - UI tools: excalidraw (for drafts)
+> - Add full Market Research done by Grok AI (the files are in the repo)
 
 # Live Website
 - [https://group-07.infinityfreeapp.com](https://group-07.infinityfreeapp.com)
@@ -28,3 +34,9 @@ Submitted by	:
 - but to export it, open the database in XAMPP and use "Export" to export as a .sql file (or, ".sql.zip")
 - in the new location (in a different computer) create a new database, and use "Import" and select the .sql file or the .sql.zip to import the database files.
 
+# Future Additions
+- Consistent reminder of services: Accepted / Offered sevices will be reminded throughout the website using a popup bar on the screen
+- Add location to service creation. Add "Agreements" to services and make minimum payments (neglegible amount) mandatory to reduce spam.
+- AI Chat
+- CSS improvements
+- Javascript improvements. PHP to Laravel/Node.js/Django Backend, and MySQL to MongoDB Database.
